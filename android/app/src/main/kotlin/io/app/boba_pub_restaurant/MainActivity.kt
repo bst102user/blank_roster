@@ -1,4 +1,4 @@
-package io.app.boba_pub_restaurant
+package io.app.blankroster
 
 import io.flutter.embedding.android.FlutterActivity
 
