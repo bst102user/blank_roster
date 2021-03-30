@@ -31,7 +31,7 @@ dependencies:
   syncfusion_flutter_signaturepad: ^18.4.47-beta
   shared_preferences: 0.5.12+4
   fluttertoast: ^7.1.6
-  qr_mobile_vision: ^2.0.0
+#  qr_mobile_vision: ^2.0.0
   qr_code_scanner: ^0.3.5
   http: ^0.12.2
   image_picker: ^0.6.7+22
