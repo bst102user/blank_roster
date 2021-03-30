@@ -1,128 +1,84 @@
 import 'dart:async';
-
-import 'package:boba_pub_restaurant/login.dart';
+import 'package:demolight/app_utils/common_var.dart';
+import 'package:demolight/pages/dahsboard.dart';
+import 'package:demolight/pages/demo_vehicle.dart';
+import 'package:demolight/pages/login_page.dart';
+// import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  // Firebase.initializeApp();
+void main() async{
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp();
   runApp(MyApp());
-  // DynamicLinkService().handleDynamicLinks();
 }
 
 class MyApp extends StatelessWidget {
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Roster',
+      title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch:  MaterialColor(0xFF401461, {
-          50:  Color(0xFF401461),
-          100: Color(0xFF401461),
-          200: Color(0xFF401461),
-          300: Color(0xFF401461),
-          400: Color(0xFF401461),
-          500: Color(0xFF401461),
-          600: Color(0xFF401461),
-          // 600: Color(0xFF401461),
-          700: Color(0xFF401461),
-          800: Color(0xFF401461),
-          900: Color(0xFF401461),
-        }),
+        primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: "3c",),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  SharedPreferences mPref;
-  // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-  // final Location location = Location();
-  // getFcmToken()async{
-  //   mPref = await SharedPreferences.getInstance();
-  //   _firebaseMessaging.getToken().then((token){
-  //     print(token);
-  //     mPref.setString('firebase_token', token);
-  //   });
-  //
-  // }
-
-  goToNextPage() async{
-    mPref = await SharedPreferences.getInstance();
-    bool checkLoginStatus = mPref.get("login_status");
-    if(checkLoginStatus == null){
-      checkLoginStatus = false;
-    }
-    if(checkLoginStatus){
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        Navigator.push(
-            context,
-            new MaterialPageRoute(
-                builder: (context) => Login()));
-      });
-    }
-    else {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        Navigator.push(
-            context,
-            new MaterialPageRoute(
-                builder: (context) => Login()));
-      });
-    }
-  }
 
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-    // getFcmToken();
-    // openLocationSetting();
-    Timer(
-        Duration(seconds: 3),
-            ()async{
-          mPref = await SharedPreferences.getInstance();
-          bool checkLoginStatus = mPref.get("login_status");
-          if(checkLoginStatus == null){
-            checkLoginStatus = false;
-          }
-          if(checkLoginStatus){
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (BuildContext context) => Login()));
-          }
-          else {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (BuildContext context) => Login()));
-          }
-        });
+    goToNextPage();
   }
 
-  // void openLocationSetting() async {
-  //   bool serviceStatus = await location.serviceEnabled();
-  //   if (serviceStatus) {
-  //     // service enabled
-  //   } else {
-  //     // service not enabled, restricted or permission denied
-  //   }
-  // }
+  void goToNextPage()async{
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    bool isLogin = preferences.getBool(CommonVar.IS_LOGIN_KEY);
+    if(isLogin == null){
+      isLogin = false;
+    }
+    if(isLogin){
+      Timer(
+          Duration(seconds: 3),
+              () => Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (BuildContext context) => Dashboard())));
+    }
+    else{
+      Timer(
+          Duration(seconds: 3),
+              () => Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (BuildContext context) => LoginPage())));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        color: const Color(0xFFffffff),
-        child:Image.asset('assets/images/splash_icon.png')
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'Demolight',
+              style: TextStyle(
+                color: CommonVar.app_theme_color,
+                fontSize: 50.0,
+                fontWeight: FontWeight.w700
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
