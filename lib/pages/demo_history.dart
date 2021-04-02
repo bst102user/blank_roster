@@ -16,6 +16,21 @@ class DemoHistory extends StatefulWidget {
 
 class DemoHistoryState extends State<DemoHistory> {
   TextEditingController searchController = new TextEditingController();
+  List<DriverListResponseTrue> _searchResult = [];
+  List<DriverListResponseTrue> _userDetails = [];
+
+  onSearchTextChanged(String text) async {
+    _searchResult.clear();
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+    _userDetails.forEach((userDetail) {
+      if (userDetail.email.contains(text) || userDetail.firstname.contains(text) || userDetail.phone.contains(text))
+        _searchResult.add(userDetail);
+    });
+    setState(() {});
+  }
 
   Future<String> getUserId() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -41,6 +56,7 @@ class DemoHistoryState extends State<DemoHistory> {
         DriversModel driversModel = driversModelFromJson(response.body);
         List<DriverListResponseTrue> driversList =
             driversModel.driverListResponseTrue;
+        _userDetails = driversList;
         return driversList;
       }
     }
@@ -70,7 +86,15 @@ class DemoHistoryState extends State<DemoHistory> {
                   child: TextField(
                     controller: searchController,
                     keyboardType: TextInputType.text,
+                    onChanged: onSearchTextChanged,
                     decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          searchController.clear();
+                          onSearchTextChanged('');
+                        },
+                        icon: Icon(Icons.clear),
+                      ),
                       hintText: 'Search Customer Name',
                       hintStyle: TextStyle(fontSize: 16),
                       border: OutlineInputBorder(
@@ -125,7 +149,99 @@ class DemoHistoryState extends State<DemoHistory> {
                         List<DriverListResponseTrue> sDriver = snapshot.data;
                         return Expanded(
                           flex: 9,
-                          child: ListView.builder(
+                          child:  _searchResult.length != 0 || searchController.text.isNotEmpty
+                              ?ListView.builder(
+                            itemCount: _searchResult.length,
+                            shrinkWrap: true,
+                            itemBuilder: (context, i) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Container(
+                                    width: double.infinity,
+                                    color: Colors.grey[300],
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 7.0),
+                                      child: Text(
+                                        _searchResult[i].startDate,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Card(
+                                      child: Column(
+                                        crossAxisAlignment:CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 20.0),
+                                            child: Row(
+                                              // crossAxisAlignment:CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                InkWell(
+                                                  onTap:(){
+                                                    List<String> allImages = [];
+                                                    allImages.add(AppApis.IMAGE_BASE_URL+_searchResult[i].licencePic);
+                                                    allImages.add(AppApis.IMAGE_BASE_URL+_searchResult[i].insurancePic);
+                                                    allImages.add(AppApis.IMAGE_BASE_URL+_searchResult[i].signature);
+                                                    Navigator.push(context, MaterialPageRoute(
+                                                        builder: (BuildContext context) => SeeAllPhotos(allImages)));
+                                                  },
+                                                  child: Image.network(
+                                                      AppApis.IMAGE_BASE_URL+_searchResult[i].licencePic,
+                                                    width: deviceWidth*0.3,
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(left: 10.0),
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: <Widget>[
+                                                      Text(
+                                                        _searchResult[i].firstname,
+                                                        style: TextStyle(
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        'M: '+_searchResult[i].phone,
+                                                        style: TextStyle(
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        'Stk #77888',
+                                                        style: TextStyle(
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        _searchResult[i].model+' '+_searchResult[i].make,
+                                                        style: TextStyle(
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        'E: '+_searchResult[i].email,
+                                                        style: TextStyle(
+                                                          color: Colors.black,
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ):
+                          ListView.builder(
                             itemCount: sDriver.length,
                             shrinkWrap: true,
                             itemBuilder: (context, i) {
@@ -163,7 +279,7 @@ class DemoHistoryState extends State<DemoHistory> {
                                                         builder: (BuildContext context) => SeeAllPhotos(allImages)));
                                                   },
                                                   child: Image.network(
-                                                      AppApis.IMAGE_BASE_URL+sDriver[i].licencePic,
+                                                    AppApis.IMAGE_BASE_URL+sDriver[i].licencePic,
                                                     width: deviceWidth*0.3,
                                                   ),
                                                 ),

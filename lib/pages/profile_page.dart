@@ -73,6 +73,7 @@ class ProfilePageState extends State<ProfilePage>{
     CommonMethods.showAlertDialog(context);
     var mBody = {
       "id": userId,
+      "username": usernameTec.text,
       "sortname": sortTec.text,
       "firstname": fnameTec.text,
       "lastname": lnameTec.text,

@@ -75,10 +75,15 @@ class ScanPageState extends State<ScanPage>{
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      InkWell(
+                        onTap: (){
+                          Navigator.pop(context);
+                        },
+                        child: Text(
                           'Cancel',
-                        style: TextStyle(
-                          color: CommonVar.app_theme_color
+                          style: TextStyle(
+                              color: CommonVar.app_theme_color
+                          ),
                         ),
                       ),
                       InkWell(

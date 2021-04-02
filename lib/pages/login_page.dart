@@ -9,7 +9,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'package:demolight/app_utils/common_var.dart';
 
 class LoginPage extends StatefulWidget{
   LoginPageState createState() => LoginPageState();
@@ -19,39 +18,6 @@ class LoginPageState extends State<LoginPage>{
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController emailCntrl = new TextEditingController();
   TextEditingController passCntrl = new TextEditingController();
-
-  // Future<void> signin() async {
-  //   CommonMethods.showAlertDialog(context);
-  //   final formState = _formKey.currentState;
-  //   await Firebase.initializeApp();
-  //   if (formState.validate()) {
-  //     setState(() {
-  //       // loading = true;
-  //     });
-  //     formState.save();
-  //     try {
-  //       final User user = (await FirebaseAuth.instance
-  //           .signInWithEmailAndPassword(email: emailCntrl.text, password: passCntrl.text))
-  //           .user;
-  //       print(user);
-  //       if(user.email == emailCntrl.text){
-  //         Navigator.pop(context);
-  //         SharedPreferences preferences = await SharedPreferences.getInstance();
-  //         preferences.setBool('is_login', true);
-  //         Navigator.push(context,MaterialPageRoute(
-  //             builder: (BuildContext context) => Dashboard()));
-  //       }
-  //     } catch (e) {
-  //       print(e.message);
-  //       setState(() {
-  //         print(e);
-  //         Navigator.pop(context);
-  //         CommonMethods.showToast('Email or password is incorrect');
-  //         // loading = false;
-  //       });
-  //     }
-  //   }
-  // }
 
   loginUser(String username, String password) async {
     if (_formKey.currentState.validate()) {

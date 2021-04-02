@@ -24,33 +24,26 @@ class Driver1PageState extends State<Driver1Page>{
   File insuImgFile = null;
   bool isLicImg;
   bool isInsuImg;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   void _handleClearButtonPressed() {
     signatureGlobalKey.currentState.clear();
   }
 
-  Future<String> _saveMySignature() async {
-    final data = await signatureGlobalKey.currentState.toImage(pixelRatio: 3.0);
-    ByteData bytes = await data.toByteData(format: ui.ImageByteFormat.png);
-    Uint8List tempImg = await bytes.buffer.asUint8List();
-    if (tempImg != null) {
-      final tempDir = await getTemporaryDirectory();
-      final file = await new File('${tempDir.path}/image.jpg').create();
-      List<int> imageBytes = file.readAsBytesSync();
-      String photoBase64Sign = base64Encode(imageBytes);
-
-      String photoBase64Lic = "";
-      String photoBase64Insu = "";
-      if(licImgFile != null){
-        List<int> imageBytes = licImgFile.readAsBytesSync();
-        photoBase64Lic = base64Encode(imageBytes);
-        print('photoBase64: '+photoBase64Lic);
-      }
-      if(insuImgFile != null){
-        List<int> imageBytes = insuImgFile.readAsBytesSync();
-        photoBase64Insu = base64Encode(imageBytes);
-        print('photoBase64: '+photoBase64Insu);
-      }
+  gggg(){
+    String photoBase64Lic = "";
+    String photoBase64Insu = "";
+    if(licImgFile != null){
+      List<int> imageBytes = licImgFile.readAsBytesSync();
+      photoBase64Lic = base64Encode(imageBytes);
+      print('photoBase64: '+photoBase64Lic);
+    }
+    if(insuImgFile != null){
+      List<int> imageBytes = insuImgFile.readAsBytesSync();
+      photoBase64Insu = base64Encode(imageBytes);
+      print('photoBase64: '+photoBase64Insu);
+    }
+    _saveMySignature().then((signBase64){
       List<String> mData = [];
       mData.add(fnameController.text);
       mData.add(lnameController.text);
@@ -58,51 +51,40 @@ class Driver1PageState extends State<Driver1Page>{
       mData.add(emailController.text);
       mData.add(photoBase64Lic);
       mData.add(photoBase64Insu);
-      mData.add(photoBase64Sign);
+      mData.add(signBase64);
       fnameController.text = '';
       lnameController.text = '';
       phoneController.text = '';
       emailController.text = '';
+      _handleClearButtonPressed();
 
       Navigator.push(context, MaterialPageRoute(
           builder: (BuildContext context) => DemoVehicle(mData)));
-
-      // return photoBase64Lic;
-    }
-    else {
-      return '';
-    }
+    });
   }
 
-  void _settingModalBottomSheet(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return Container(
-            child: new Wrap(
-              children: <Widget>[
-                new ListTile(
-                    title: new Text('Gallery'),
-                    onTap: () => {
-                      imageSelector(context, "gallery"),
-                      Navigator.pop(context),
-                    }),
-                new ListTile(
-                  title: new Text('Camera'),
-                  onTap: () => {
-                    imageSelector(context, "camera"),
-                    Navigator.pop(context)
-                  },
-                ),
-              ],
-            ),
-          );
-        });
+  Future<String> _saveMySignature() async {
+    if (_formKey.currentState.validate()){
+      final data = await signatureGlobalKey.currentState.toImage(pixelRatio: 1.0);
+      ByteData bytes = await data.toByteData(format: ui.ImageByteFormat.png);
+      Uint8List tempImg = await bytes.buffer.asUint8List();
+      if (tempImg != null) {
+        final tempDir = await getTemporaryDirectory();
+        String timeStamp = DateTime.now().millisecondsSinceEpoch.toString();
+        final file = await new File('${tempDir.path}/image.jpg').create();
+        List<int> imageBytes = file.readAsBytesSync();
+        String photoBase64Sign = base64Encode(imageBytes);
+        return photoBase64Sign;
+      }
+      else {
+        return '';
+      }
+    }
   }
 
   Future imageSelector(BuildContext context, String pickerType) async {
 
-    File mFile = await ImagePicker.pickImage(source: ImageSource.camera, imageQuality: 90);
+    File mFile = await ImagePicker.pickImage(source: ImageSource.camera, imageQuality: 50);
     if (mFile != null) {
       print("You selected  image : " + mFile.path);
       setState(() {
@@ -146,6 +128,7 @@ class Driver1PageState extends State<Driver1Page>{
       lnameController.text = '';
       phoneController.text = '';
       emailController.text = '';
+      _handleClearButtonPressed();
     });
     return mData;
   }
@@ -190,7 +173,8 @@ class Driver1PageState extends State<Driver1Page>{
                         onTap: (){
                           isLicImg = true;
                           isInsuImg = false;
-                          _settingModalBottomSheet(context);
+                          imageSelector(context, "camera");
+                          // _settingModalBottomSheet(context);
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -213,7 +197,7 @@ class Driver1PageState extends State<Driver1Page>{
                         onTap: (){
                           isLicImg = false;
                           isInsuImg = true;
-                          _settingModalBottomSheet(context);
+                          imageSelector(context, "camera");
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -238,33 +222,20 @@ class Driver1PageState extends State<Driver1Page>{
               ),
               Padding(
                 padding: const EdgeInsets.all(15.0),
-                child: Column(
-                  children: <Widget>[
-                    TextField(
-                      controller: fnameController,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        hintText: 'First Name',
-                        hintStyle: TextStyle(fontSize: 16),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            width: 0,
-                            style: BorderStyle.none,
-                          ),
-                        ),
-                        filled: true,
-                        contentPadding: EdgeInsets.all(10),
-                        // fillColor: colorSearchBg,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top:10.0),
-                      child: TextField(
-                        controller: lnameController,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      TextFormField(
+                        validator: (input) {
+                          if(input.isEmpty){
+                            return 'Provide first name';
+                          }
+                        },
+                        controller: fnameController,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
-                          hintText: 'Last Name',
+                          hintText: 'First Name',
                           hintStyle: TextStyle(fontSize: 16),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -278,104 +249,141 @@ class Driver1PageState extends State<Driver1Page>{
                           // fillColor: colorSearchBg,
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top:10.0),
-                      child: TextField(
-                        controller: phoneController,
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                          hintText: 'Phone #',
-                          hintStyle: TextStyle(fontSize: 16),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              width: 0,
-                              style: BorderStyle.none,
-                            ),
-                          ),
-                          filled: true,
-                          contentPadding: EdgeInsets.all(10),
-                          // fillColor: colorSearchBg,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top:10.0),
-                      child: TextField(
-                        controller: emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          hintText: 'Email',
-                          hintStyle: TextStyle(fontSize: 16),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              width: 0,
-                              style: BorderStyle.none,
-                            ),
-                          ),
-                          filled: true,
-                          contentPadding: EdgeInsets.all(10),
-                          // fillColor: colorSearchBg,
-                        ),
-                      ),
-                    ),
-                    Divider(
-                      color: Colors.black,
-                    ),
-                    Column(
-                        children: [
-                          Row(children: <Widget>[
-                            FlatButton(
-                              child: Text(
-                                  'Signed below',
-                                style: TextStyle(
-                                  color: CommonVar.app_theme_color
-                                ),
+                      Padding(
+                        padding: const EdgeInsets.only(top:10.0),
+                        child: TextFormField(
+                          validator: (input) {
+                            if(input.isEmpty){
+                              return 'Provide last name';
+                            }
+                          },
+                          controller: lnameController,
+                          keyboardType: TextInputType.text,
+                          decoration: InputDecoration(
+                            hintText: 'Last Name',
+                            hintStyle: TextStyle(fontSize: 16),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                width: 0,
+                                style: BorderStyle.none,
                               ),
-                              onPressed: _saveMySignature,
                             ),
-                            FlatButton(
-                              child: Text('Clear'),
-                              onPressed: _handleClearButtonPressed,
-                            )
-                          ], mainAxisAlignment: MainAxisAlignment.spaceBetween),
-                          Padding(
-                              padding: EdgeInsets.all(10),
-                              child: Container(
-                                  child: SfSignaturePad(
-                                      key: signatureGlobalKey,
-                                      backgroundColor: Colors.white,
-                                      strokeColor: Colors.black,
-                                      minimumStrokeWidth: 1.0,
-                                      maximumStrokeWidth: 4.0),
-                                  decoration:
-                                  BoxDecoration(border: Border.all(color: Colors.white)))),
-                        ],
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 15.0),
-                      child: InkWell(
-                        onTap: (){
-                          _saveMySignature();
-                          // List<String> preDetailList = addDataForSend();
-                          // Navigator.push(context, MaterialPageRoute(
-                          //     builder: (BuildContext context) => DemoVehicle(preDetailList)));
-                        },
-                        child: Container(
-                          height: 45.0,
-                          decoration: new BoxDecoration(
-                            color: CommonVar.app_theme_color,
-                            //border: new Border.all(color: Colors.white, width: 2.0),
-                            borderRadius: new BorderRadius.circular(10.0),
+                            filled: true,
+                            contentPadding: EdgeInsets.all(10),
+                            // fillColor: colorSearchBg,
                           ),
-                          child: Center(child: new Text('Vehicle', style: new TextStyle(fontSize: 18.0, color: Colors.white),),),
                         ),
                       ),
-                    ),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.only(top:10.0),
+                        child: TextFormField(
+                          validator: (input) {
+                            if(input.isEmpty){
+                              return 'Provide phone number';
+                            }
+                          },
+                          controller: phoneController,
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                            hintText: 'Phone #',
+                            hintStyle: TextStyle(fontSize: 16),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                width: 0,
+                                style: BorderStyle.none,
+                              ),
+                            ),
+                            filled: true,
+                            contentPadding: EdgeInsets.all(10),
+                            // fillColor: colorSearchBg,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top:10.0),
+                        child: TextFormField(
+                          validator: (input) {
+                            if(input.isEmpty){
+                              return 'Provide an email';
+                            }
+                          },
+                          controller: emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            hintText: 'Email',
+                            hintStyle: TextStyle(fontSize: 16),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                width: 0,
+                                style: BorderStyle.none,
+                              ),
+                            ),
+                            filled: true,
+                            contentPadding: EdgeInsets.all(10),
+                            // fillColor: colorSearchBg,
+                          ),
+                        ),
+                      ),
+                      Divider(
+                        color: Colors.black,
+                      ),
+                      Column(
+                          children: [
+                            Row(children: <Widget>[
+                              FlatButton(
+                                child: Text(
+                                    'Signed below',
+                                  style: TextStyle(
+                                    color: CommonVar.app_theme_color
+                                  ),
+                                ),
+                                onPressed: null,
+                              ),
+                              FlatButton(
+                                child: Text('Clear'),
+                                onPressed: _handleClearButtonPressed,
+                              )
+                            ], mainAxisAlignment: MainAxisAlignment.spaceBetween),
+                            Padding(
+                                padding: EdgeInsets.all(10),
+                                child: Container(
+                                    child: SfSignaturePad(
+                                        key: signatureGlobalKey,
+                                        backgroundColor: Colors.white,
+                                        strokeColor: Colors.black,
+                                        minimumStrokeWidth: 1.0,
+                                        maximumStrokeWidth: 4.0),
+                                    decoration:
+                                    BoxDecoration(border: Border.all(color: Colors.white)))),
+                          ],
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15.0),
+                        child: InkWell(
+                          onTap: (){
+                            gggg();
+                            // _saveMySignature();
+                            // List<String> preDetailList = addDataForSend();
+                            // Navigator.push(context, MaterialPageRoute(
+                            //     builder: (BuildContext context) => DemoVehicle(preDetailList)));
+                          },
+                          child: Container(
+                            height: 45.0,
+                            decoration: new BoxDecoration(
+                              color: CommonVar.app_theme_color,
+                              //border: new Border.all(color: Colors.white, width: 2.0),
+                              borderRadius: new BorderRadius.circular(10.0),
+                            ),
+                            child: Center(child: new Text('Vehicle', style: new TextStyle(fontSize: 18.0, color: Colors.white),),),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
