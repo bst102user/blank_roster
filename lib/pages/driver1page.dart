@@ -13,8 +13,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 
 class Driver1Page extends StatefulWidget{
-  final bool isDriver1;
-  Driver1Page(this.isDriver1);
   Driver1PageState createState() => Driver1PageState();
 }
 class Driver1PageState extends State<Driver1Page>{
@@ -48,36 +46,28 @@ class Driver1PageState extends State<Driver1Page>{
     }
     _saveMySignature().then((signBase64)async{
       List<String> mData = [];
-      mData.add(fnameController.text);
-      mData.add(lnameController.text);
-      mData.add(phoneController.text);
-      mData.add(emailController.text);
+      mData.add(fnameController.text==null?'':fnameController.text);
+      mData.add(lnameController.text==null?'':lnameController.text);
+      mData.add(phoneController.text==null?'':phoneController.text);
+      mData.add(emailController.text==null?'':emailController.text);
       mData.add(photoBase64Lic);
       mData.add(photoBase64Insu);
       mData.add(signBase64);
-      if(_formKey.currentState.validate()){
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        if(widget.isDriver1) {
-          preferences.setString(CommonVar.DRIVER1_FULL_NAME,
-              fnameController.text + ' ' + lnameController.text);
-        }
-        else{
-          preferences.setString(CommonVar.DRIVER2_FULL_NAME,
-              fnameController.text + ' ' + lnameController.text);
-        }
-        Navigator.push(context, MaterialPageRoute(
-            builder: (BuildContext context) => DemoVehicle(mData)));
-        fnameController.text = '';
-        lnameController.text = '';
-        phoneController.text = '';
-        emailController.text = '';
-        _handleClearButtonPressed();
-      }
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      preferences.setString(CommonVar.DRIVER1_FULL_NAME,
+          fnameController.text + ' ' + lnameController.text);
+      Navigator.push(context, MaterialPageRoute(
+          builder: (BuildContext context) => DemoVehicle(mData)));
+      // fnameController.text = '';
+      // lnameController.text = '';
+      // phoneController.text = '';
+      // emailController.text = '';
+      // _handleClearButtonPressed();
     });
   }
 
   Future<String> _saveMySignature() async {
-    if (_formKey.currentState.validate()){
+    if (true){
       final data = await signatureGlobalKey.currentState.toImage(pixelRatio: 1.0);
       ByteData bytes = await data.toByteData(format: ui.ImageByteFormat.png);
       Uint8List tempImg = await bytes.buffer.asUint8List();
@@ -238,20 +228,43 @@ class Driver1PageState extends State<Driver1Page>{
               ),
               Padding(
                 padding: const EdgeInsets.all(15.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: <Widget>[
-                      TextFormField(
-                        validator: (input) {
-                          if(input.isEmpty){
-                            return 'Provide first name';
-                          }
-                        },
-                        controller: fnameController,
+                child: Column(
+                  children: <Widget>[
+                    TextFormField(
+                      // validator: (input) {
+                      //   if(input.isEmpty){
+                      //     return 'Provide first name';
+                      //   }
+                      // },
+                      controller: fnameController,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        hintText: 'First Name',
+                        hintStyle: TextStyle(fontSize: 16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            width: 0,
+                            style: BorderStyle.none,
+                          ),
+                        ),
+                        filled: true,
+                        contentPadding: EdgeInsets.all(10),
+                        // fillColor: colorSearchBg,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top:10.0),
+                      child: TextFormField(
+                        // validator: (input) {
+                        //   if(input.isEmpty){
+                        //     return 'Provide last name';
+                        //   }
+                        // },
+                        controller: lnameController,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
-                          hintText: 'First Name',
+                          hintText: 'Last Name',
                           hintStyle: TextStyle(fontSize: 16),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -265,133 +278,107 @@ class Driver1PageState extends State<Driver1Page>{
                           // fillColor: colorSearchBg,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top:10.0),
-                        child: TextFormField(
-                          validator: (input) {
-                            if(input.isEmpty){
-                              return 'Provide last name';
-                            }
-                          },
-                          controller: lnameController,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            hintText: 'Last Name',
-                            hintStyle: TextStyle(fontSize: 16),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                width: 0,
-                                style: BorderStyle.none,
-                              ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top:10.0),
+                      child: TextFormField(
+                        // validator: (input) {
+                        //   if(input.isEmpty){
+                        //     return 'Provide phone number';
+                        //   }
+                        // },
+                        controller: phoneController,
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                          hintText: 'Phone #',
+                          hintStyle: TextStyle(fontSize: 16),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              width: 0,
+                              style: BorderStyle.none,
                             ),
-                            filled: true,
-                            contentPadding: EdgeInsets.all(10),
-                            // fillColor: colorSearchBg,
                           ),
+                          filled: true,
+                          contentPadding: EdgeInsets.all(10),
+                          // fillColor: colorSearchBg,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top:10.0),
-                        child: TextFormField(
-                          validator: (input) {
-                            if(input.isEmpty){
-                              return 'Provide phone number';
-                            }
-                          },
-                          controller: phoneController,
-                          keyboardType: TextInputType.phone,
-                          decoration: InputDecoration(
-                            hintText: 'Phone #',
-                            hintStyle: TextStyle(fontSize: 16),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                width: 0,
-                                style: BorderStyle.none,
-                              ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top:10.0),
+                      child: TextFormField(
+                        // validator: (input) {
+                        //   if(input.isEmpty){
+                        //     return 'Provide an email';
+                        //   }
+                        // },
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          hintText: 'Email',
+                          hintStyle: TextStyle(fontSize: 16),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              width: 0,
+                              style: BorderStyle.none,
                             ),
-                            filled: true,
-                            contentPadding: EdgeInsets.all(10),
-                            // fillColor: colorSearchBg,
                           ),
+                          filled: true,
+                          contentPadding: EdgeInsets.all(10),
+                          // fillColor: colorSearchBg,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top:10.0),
-                        child: TextFormField(
-                          validator: (input) {
-                            if(input.isEmpty){
-                              return 'Provide an email';
-                            }
-                          },
-                          controller: emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
-                            hintText: 'Email',
-                            hintStyle: TextStyle(fontSize: 16),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                width: 0,
-                                style: BorderStyle.none,
+                    ),
+                    Divider(
+                      color: Colors.black,
+                    ),
+                    Column(
+                        children: [
+                          Row(children: <Widget>[
+                            Text(
+                              'Signed below',
+                              style: TextStyle(
+                                  color: CommonVar.app_theme_color
                               ),
                             ),
-                            filled: true,
-                            contentPadding: EdgeInsets.all(10),
-                            // fillColor: colorSearchBg,
-                          ),
-                        ),
-                      ),
-                      Divider(
-                        color: Colors.black,
-                      ),
-                      Column(
-                          children: [
-                            Row(children: <Widget>[
-                              Text(
-                                'Signed below',
-                                style: TextStyle(
-                                    color: CommonVar.app_theme_color
-                                ),
-                              ),
-                              InkWell(onTap: _handleClearButtonPressed,
-                                  child: Text('Clear'))
-                            ], mainAxisAlignment: MainAxisAlignment.spaceBetween),
-                            Padding(
-                                padding: EdgeInsets.only(top:5.0,left: 10,right: 10.0),
-                                child: Container(
+                            InkWell(onTap: _handleClearButtonPressed,
+                                child: Text('Clear'))
+                          ], mainAxisAlignment: MainAxisAlignment.spaceBetween),
+                          Padding(
+                              padding: EdgeInsets.only(top:5.0,left: 10,right: 10.0),
+                              child: Container(
                                   height: 150.0,
-                                    child: SfSignaturePad(
-                                        key: signatureGlobalKey,
-                                        backgroundColor: Colors.white,
-                                        strokeColor: Colors.black,
-                                        minimumStrokeWidth: 1.0,
-                                        maximumStrokeWidth: 4.0),
-                                    decoration:
-                                    BoxDecoration(border: Border.all(color: Colors.white)))),
-                          ],
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
-                        child: InkWell(
-                          onTap: (){
-                            gggg();
-                          },
-                          child: Container(
-                            height: 45.0,
-                            decoration: new BoxDecoration(
-                              color: CommonVar.app_theme_color,
-                              //border: new Border.all(color: Colors.white, width: 2.0),
-                              borderRadius: new BorderRadius.circular(10.0),
-                            ),
-                            child: Center(child: new Text('Vehicle', style: new TextStyle(fontSize: 18.0, color: Colors.white),),),
+                                  child: SfSignaturePad(
+                                      key: signatureGlobalKey,
+                                      backgroundColor: Colors.white,
+                                      strokeColor: Colors.black,
+                                      minimumStrokeWidth: 1.0,
+                                      maximumStrokeWidth: 4.0),
+                                  decoration:
+                                  BoxDecoration(border: Border.all(color: Colors.white)))),
+                        ],
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                      child: InkWell(
+                        onTap: (){
+                          gggg();
+                        },
+                        child: Container(
+                          height: 45.0,
+                          decoration: new BoxDecoration(
+                            color: CommonVar.app_theme_color,
+                            //border: new Border.all(color: Colors.white, width: 2.0),
+                            borderRadius: new BorderRadius.circular(10.0),
                           ),
+                          child: Center(child: new Text('Vehicle', style: new TextStyle(fontSize: 18.0, color: Colors.white),),),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],

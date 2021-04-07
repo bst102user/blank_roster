@@ -1,15 +1,15 @@
 // To parse this JSON data, do
 //
-//     final makeModelModel = makeModelModelFromJson(jsonString);
+//     final modelModel = modelModelFromJson(jsonString);
 
 import 'dart:convert';
 
-MakeModelModel makeModelModelFromJson(String str) => MakeModelModel.fromJson(json.decode(str));
+ModelModel modelModelFromJson(String str) => ModelModel.fromJson(json.decode(str));
 
-String makeModelModelToJson(MakeModelModel data) => json.encode(data.toJson());
+String modelModelToJson(ModelModel data) => json.encode(data.toJson());
 
-class MakeModelModel {
-  MakeModelModel({
+class ModelModel {
+  ModelModel({
     this.count,
     this.message,
     this.searchCriteria,
@@ -19,13 +19,13 @@ class MakeModelModel {
   int count;
   String message;
   String searchCriteria;
-  List<Result> results;
+  List<ResultModel> results;
 
-  factory MakeModelModel.fromJson(Map<String, dynamic> json) => MakeModelModel(
+  factory ModelModel.fromJson(Map<String, dynamic> json) => ModelModel(
     count: json["Count"],
     message: json["Message"],
     searchCriteria: json["SearchCriteria"],
-    results: List<Result>.from(json["Results"].map((x) => Result.fromJson(x))),
+    results: List<ResultModel>.from(json["Results"].map((x) => ResultModel.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -36,8 +36,8 @@ class MakeModelModel {
   };
 }
 
-class Result {
-  Result({
+class ResultModel {
+  ResultModel({
     this.makeId,
     this.makeName,
     this.modelId,
@@ -49,7 +49,7 @@ class Result {
   int modelId;
   String modelName;
 
-  factory Result.fromJson(Map<String, dynamic> json) => Result(
+  factory ResultModel.fromJson(Map<String, dynamic> json) => ResultModel(
     makeId: json["Make_ID"],
     makeName: json["Make_Name"],
     modelId: json["Model_ID"],

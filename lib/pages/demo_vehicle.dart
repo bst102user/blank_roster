@@ -3,7 +3,8 @@ import 'dart:convert';//signature
 import 'package:demolight/app_utils/app_apis.dart';
 import 'package:demolight/app_utils/common_methods.dart';
 import 'package:demolight/app_utils/common_var.dart';
-import 'package:demolight/models/make_model_model.dart';
+import 'package:demolight/models/make_model.dart';
+import 'package:demolight/models/model_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -21,8 +22,11 @@ class DemoVehicleState extends State<DemoVehicle>{
   List<String> _yearSelesct = ['2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021'];
   String _selectedSource;
   String _selectedYearStr;
-  Result selectedMake;
-  List<Result> resultList;
+  ResultMake selectedMake;
+  List<ResultMake> resultList;
+
+  ResultModel selectedModel;
+  List<ResultModel> resultModelList;
   String selectModelStr;
   TextEditingController stockController = new TextEditingController();
   TextEditingController yearController = new TextEditingController();
@@ -62,28 +66,6 @@ class DemoVehicleState extends State<DemoVehicle>{
       if (_formKey.currentState.validate()) {
         getPreferenceData().then((userId) async {
           CommonMethods.showAlertDialog(context);
-          /*
-          * $_POST['user_id']="2"
-$_POST['source']="google"
-$_POST['start_date']="2021-10-02"
-$_POST['end_date']="2021-10-05"
-$_POST['year']="2020"
-$_POST['make']="Maruti"
-$_POST['model']="Suzuki"
-$_POST['firstname']="Test"
-$_POST['lastname']="Team"
-$_POST['phone']="9988776655"
-$_POST['email']="testingteam2@gmail.com"
-$_POST['signature']=""
-$_POST['licence_pic']=""
-$_POST['insurance_pic']=""
-$_POST['firstname2']="Test"
-$_POST['lastname2']="Team"
-$_POST['phone2']="9988776655"
-$_POST['email2']="testingteam2@gmail.com"
-$_POST['signature2']=""
-$_POST['licence_pic2']=""
-$_POST['insurance_pic2']=""*/
           var mBody = {
             "user_id": userId[0],
             "source": _selectedSource,
@@ -151,6 +133,7 @@ $_POST['insurance_pic2']=""*/
                   CupertinoButton(
                     child: Text('OK'),
                     onPressed: (){
+                      _chosenDateTime = null;
                       Navigator.of(ctx).pop();
                       setState(() {
                         if(_chosenDateTime == null){
@@ -158,6 +141,8 @@ $_POST['insurance_pic2']=""*/
                           _chosenDateTime = new DateTime(now.year, now.month, now.day, now.hour, now.minute);
                         }
                         if(isStartDate){
+                          // DateTime now = new DateTime.now();
+                          // _chosenDateTime = new DateTime(now.year, now.month, now.day, now.hour, now.minute);
                           String parseDate = new DateFormat("MMM dd, yyyy hh:mm a").format(_chosenDateTime);
                           startDateStr = parseDate;
                           startDateStrForServer = new DateFormat("yyyy-MM-dd").format(_chosenDateTime);
@@ -188,15 +173,34 @@ $_POST['insurance_pic2']=""*/
             ));
   }
 
-  getMakeModels(String year)async{
+  getMakeData(String year)async{
+    selectedMake = null;
     CommonMethods.showAlertDialog(context);
-    String mUrl = AppApis.GET_MAKE_MODEL+year+'?format=json';
+    String mUrl = AppApis.GET_MAKE+year+'&format=json';
+    print(mUrl);
     final response = await http.get(mUrl);
     if (response.statusCode == 200) {
       Navigator.pop(context);
       setState(() {
-        MakeModelModel makeModelModel = makeModelModelFromJson(response.body);
+        MakeModel makeModelModel = makeModelFromJson(response.body);
         resultList = makeModelModel.results;
+      });
+    }
+  }
+
+  getModelsData(String makeNameStr, String year)async{
+    selectedModel = null;
+    CommonMethods.showAlertDialog(context);
+    String mUrl = AppApis.GET_MODEL+makeNameStr+'/modelyear/'+year+'?format=json';
+    print(mUrl);
+    final response = await http.get(mUrl);
+    if (response.statusCode == 200) {
+      Navigator.pop(context);
+      setState(() {
+        // ModelModel modelModel = modelModelFromJson(response.body);
+        // resultList = makeModelModel.results;
+        ModelModel modelModel = modelModelFromJson(response.body);
+        resultModelList = modelModel.results;
       });
     }
   }
@@ -364,7 +368,7 @@ $_POST['insurance_pic2']=""*/
                               onChanged: (newValue) {
                                 setState(() {
                                   _selectedYearStr = newValue;
-                                  getMakeModels(_selectedYearStr);
+                                  getMakeData(_selectedYearStr);
                                 });
                               },
                               items: _yearSelesct.map((yearSelect) {
@@ -396,33 +400,33 @@ $_POST['insurance_pic2']=""*/
                           child: resultList==null?Padding(
                             padding: const EdgeInsets.only(top: 10.0,left: 5.0),
                             child: Text(
-                                'Select Make',
+                              'Select Make',
                               style: TextStyle(
-                                color: Colors.grey
+                                  color: Colors.grey
                               ),
                             ),
                           ):DropdownButtonHideUnderline(
-                            child: new DropdownButton<Result>(
+                            child: DropdownButton<ResultMake>(
                               hint: Padding(
                                 padding: const EdgeInsets.only(left: 5.0),
                                 child: Text('Please choose Make'),
                               ),
                               value: selectedMake,
                               isDense: true,
-                              onChanged: (Result newValue) {
+                              onChanged: (ResultMake newValue) {
                                 setState(() {
                                   selectedMake = newValue;
-                                  selectModelStr = newValue.modelName;
                                   selectMakeStr = newValue.makeName;
+                                  getModelsData(newValue.makeName, _selectedYearStr);
                                 });
                                 print(selectedMake);
                               },
-                              items: resultList.map((Result map) {
-                                return new DropdownMenuItem<Result>(
+                              items: resultList.map((ResultMake map) {
+                                return new DropdownMenuItem<ResultMake>(
                                   value: map,
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 5.0),
-                                    child: new Text(map.makeName+'-'+map.modelId.toString(),
+                                    child: new Text(map.makeName,
                                         style: new TextStyle(color: Colors.black)),
                                   ),
                                 );
@@ -432,29 +436,52 @@ $_POST['insurance_pic2']=""*/
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
+                        padding: const EdgeInsets.only(top:10.0),
                         child: Container(
-                            height: 40.0,
-                            width: 400.0,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.grey[200],
-                                ),
+                          height: 40.0,
+                          width: 400.0,
+                          decoration: BoxDecoration(
+                              border: Border.all(
                                 color: Colors.grey[200],
-                                borderRadius: BorderRadius.all(Radius.circular(15))
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 5.0,top: 10.0),
-                              child: selectModelStr==null?Text(
-                                  'Model Name',
-                                style: TextStyle(
-                                  color: Colors.grey
-                                ),
-                              ):
-                              Text(
-                                  selectModelStr,
                               ),
-                            )
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.all(Radius.circular(15))
+                          ),
+                          child: resultModelList==null?Padding(
+                            padding: const EdgeInsets.only(top: 10.0,left: 5.0),
+                            child: Text(
+                              'Select Model',
+                              style: TextStyle(
+                                  color: Colors.grey
+                              ),
+                            ),
+                          ):DropdownButtonHideUnderline(
+                            child: new DropdownButton<ResultModel>(
+                              hint: Padding(
+                                padding: const EdgeInsets.only(left: 5.0),
+                                child: Text('Please choose Model'),
+                              ),
+                              value: selectedModel,
+                              isDense: true,
+                              onChanged: (ResultModel newValue) {
+                                setState(() {
+                                  selectedModel = newValue;
+                                  selectModelStr = newValue.modelName;
+                                });
+                                print(selectedMake);
+                              },
+                              items: resultModelList.map((ResultModel map) {
+                                return new DropdownMenuItem<ResultModel>(
+                                  value: map,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 5.0),
+                                    child: new Text(map.modelName,
+                                        style: new TextStyle(color: Colors.black)),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
                         ),
                       ),
                       Padding(
