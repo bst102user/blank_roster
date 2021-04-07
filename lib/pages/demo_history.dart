@@ -163,7 +163,7 @@ class DemoHistoryState extends State<DemoHistory> {
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 7.0),
                                       child: Text(
-                                        _searchResult[i].startDate,
+                                        CommonMethods.convertDateTimeDisplay(_searchResult[i].startDate),
                                       ),
                                     ),
                                   ),
@@ -180,17 +180,26 @@ class DemoHistoryState extends State<DemoHistory> {
                                               children: <Widget>[
                                                 InkWell(
                                                   onTap:(){
-                                                    List<String> allImages = [];
-                                                    allImages.add(AppApis.IMAGE_BASE_URL+_searchResult[i].licencePic);
-                                                    allImages.add(AppApis.IMAGE_BASE_URL+_searchResult[i].insurancePic);
-                                                    allImages.add(AppApis.IMAGE_BASE_URL+_searchResult[i].signature);
-                                                    Navigator.push(context, MaterialPageRoute(
-                                                        builder: (BuildContext context) => SeeAllPhotos(allImages)));
-                                                  },
-                                                  child: Image.network(
+                                                    if(_searchResult[i].licencePic==''&&_searchResult[i].insurancePic==''&&_searchResult[i].signature==''){
+                                                      CommonMethods.showToast('No Image found');
+                                                    }
+                                                    else{
+                                                      List<String> allImages = [];
+                                                      allImages.add(AppApis.IMAGE_BASE_URL+_searchResult[i].licencePic);
+                                                      allImages.add(AppApis.IMAGE_BASE_URL+_searchResult[i].insurancePic);
+                                                      allImages.add(AppApis.IMAGE_BASE_URL+_searchResult[i].signature);
+                                                      Navigator.push(context, MaterialPageRoute(
+                                                          builder: (BuildContext context) => SeeAllPhotos(allImages)));
+                                                    }
+                                                    },
+                                                  child: _searchResult[i].licencePic != ''?
+                                                  Image.network(
                                                       AppApis.IMAGE_BASE_URL+_searchResult[i].licencePic,
                                                     width: deviceWidth*0.3,
-                                                  ),
+                                                  ):
+                                                  Icon(Icons.not_interested,
+                                                    color: Colors.grey,
+                                                    size: 100,),
                                                 ),
                                                 Padding(
                                                   padding: const EdgeInsets.only(left: 10.0),
@@ -210,7 +219,7 @@ class DemoHistoryState extends State<DemoHistory> {
                                                         ),
                                                       ),
                                                       Text(
-                                                        'Stk #77888',
+                                                        'year #'+_searchResult[i].year,
                                                         style: TextStyle(
                                                           color: Colors.black,
                                                         ),
@@ -254,7 +263,7 @@ class DemoHistoryState extends State<DemoHistory> {
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 7.0),
                                       child: Text(
-                                        sDriver[i].startDate,
+                                        CommonMethods.convertDateTimeDisplay(sDriver[i].startDate),
                                       ),
                                     ),
                                   ),
@@ -271,16 +280,26 @@ class DemoHistoryState extends State<DemoHistory> {
                                               children: <Widget>[
                                                 InkWell(
                                                   onTap:(){
-                                                    List<String> allImages = [];
-                                                    allImages.add(AppApis.IMAGE_BASE_URL+sDriver[i].licencePic);
-                                                    allImages.add(AppApis.IMAGE_BASE_URL+sDriver[i].insurancePic);
-                                                    allImages.add(AppApis.IMAGE_BASE_URL+sDriver[i].signature);
-                                                    Navigator.push(context, MaterialPageRoute(
-                                                        builder: (BuildContext context) => SeeAllPhotos(allImages)));
-                                                  },
-                                                  child: Image.network(
+                                                    if(sDriver[i].licencePic==''&&sDriver[i].licencePic==''&&sDriver[i].licencePic==''){
+                                                      CommonMethods.showToast('No Image found');
+                                                    }
+                                                    else{
+                                                      List<String> allImages = [];
+                                                      allImages.add(AppApis.IMAGE_BASE_URL+sDriver[i].licencePic);
+                                                      allImages.add(AppApis.IMAGE_BASE_URL+sDriver[i].insurancePic);
+                                                      allImages.add(AppApis.IMAGE_BASE_URL+sDriver[i].signature);
+                                                      Navigator.push(context, MaterialPageRoute(
+                                                          builder: (BuildContext context) => SeeAllPhotos(allImages)));
+
+                                                    }
+                                                    },
+                                                  child: sDriver[i].licencePic != ''?Image.network(
                                                     AppApis.IMAGE_BASE_URL+sDriver[i].licencePic,
                                                     width: deviceWidth*0.3,
+                                                  ):Icon(
+                                                      Icons.not_interested,
+                                                    color: Colors.grey,
+                                                    size: 100,
                                                   ),
                                                 ),
                                                 Padding(
@@ -301,7 +320,7 @@ class DemoHistoryState extends State<DemoHistory> {
                                                         ),
                                                       ),
                                                       Text(
-                                                        'Stk #77888',
+                                                        'year #'+sDriver[i].year,
                                                         style: TextStyle(
                                                           color: Colors.black,
                                                         ),

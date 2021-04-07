@@ -5,12 +5,23 @@ import 'package:demolight/pages/demo_vehicle.dart';
 import 'package:demolight/pages/login_page.dart';
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() async{
-  // WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp();
-  runApp(MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+    [
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ],
+  ).then((val) {
+    runApp(new MyApp());
+  });
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    systemNavigationBarColor: CommonVar.app_theme_color,
+    statusBarColor: CommonVar.app_theme_color,
+  ));
 }
 
 class MyApp extends StatelessWidget {

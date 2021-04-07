@@ -1,10 +1,11 @@
+import 'dart:convert';
+
 import 'package:demolight/app_utils/app_apis.dart';
 import 'package:demolight/app_utils/common_methods.dart';
 import 'package:demolight/app_utils/common_var.dart';
 import 'package:demolight/models/login_model.dart';
 import 'package:demolight/pages/dahsboard.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_core/firebase_core.dart';
+import 'package:demolight/pages/forget_password.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +19,7 @@ class LoginPageState extends State<LoginPage>{
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController emailCntrl = new TextEditingController();
   TextEditingController passCntrl = new TextEditingController();
+  TextEditingController emailForForgetCtrl = new TextEditingController();
 
   loginUser(String username, String password) async {
     if (_formKey.currentState.validate()) {
@@ -61,6 +63,72 @@ class LoginPageState extends State<LoginPage>{
       }
     }
   }
+
+  forgetPassword(String mEmail)async{
+    CommonMethods.showAlertDialog(context);
+    var mBody = {
+      "email": mEmail,
+    };
+    final response =
+    await http.post(AppApis.FORGET_PASSWORD, body: mBody);
+    print(response.body);
+    if (response.statusCode == 200) {
+      Navigator.pop(context);
+      print(response.body);
+      Map<String, dynamic> d = json.decode(response.body.trim());
+      var fullObj = d['forgot_password_response'];
+      var result = fullObj['result'];
+      if(result == 'true'){
+        Navigator.pop(context);
+        Navigator.push(context, MaterialPageRoute(
+            builder: (BuildContext context) => ForgetPassword(fullObj['id'],fullObj['otp'])));
+      }
+      CommonMethods.showToast(fullObj['massage']);
+    }
+  }
+
+  _showForgetPassDialog() async {
+    await showDialog<String>(
+      context: context,
+      child: new _SystemPadding(
+        child: new AlertDialog(
+        contentPadding: const EdgeInsets.all(16.0),
+        content: new Row(
+          children: <Widget>[
+            new Expanded(
+              child: new TextField(
+                controller: emailForForgetCtrl,
+                keyboardType: TextInputType.emailAddress,
+                autofocus: true,
+                decoration: new InputDecoration(
+                    labelText: 'Enter your email', hintText: 'eg. abc@gmail.com'),
+              ),
+            )
+          ],
+        ),
+        actions: <Widget>[
+          new FlatButton(
+              child: const Text('CANCEL'),
+              onPressed: () {
+                Navigator.pop(context);
+              }),
+          new FlatButton(
+              child: const Text('Send OTP'),
+              onPressed: () {
+                if(emailForForgetCtrl.text == '' || emailForForgetCtrl.text == null){
+                  CommonMethods.showToast('Please enter yore email');
+                }
+                else{
+                  forgetPassword(emailForForgetCtrl.text);
+                }
+              })
+        ],
+      ),
+      ),
+    );
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -167,11 +235,16 @@ class LoginPageState extends State<LoginPage>{
                       Padding(
                         padding: const EdgeInsets.only(top: 20.0),
                         child: Center(
-                          child: Text(
-                              'Forget Password',
-                            style: TextStyle(
-                              fontSize: 17.0,
-                              color: CommonVar.app_theme_color
+                          child: InkWell(
+                            onTap: (){
+                              _showForgetPassDialog();
+                            },
+                            child: Text(
+                                'Forget Password',
+                              style: TextStyle(
+                                fontSize: 17.0,
+                                color: CommonVar.app_theme_color
+                              ),
                             ),
                           ),
                         ),
@@ -187,4 +260,19 @@ class LoginPageState extends State<LoginPage>{
     );
   }
 
+}
+
+class _SystemPadding extends StatelessWidget {
+  final Widget child;
+
+  _SystemPadding({Key key, this.child}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var mediaQuery = MediaQuery.of(context);
+    return new AnimatedContainer(
+        padding: mediaQuery.viewInsets,
+        duration: const Duration(milliseconds: 300),
+        child: child);
+  }
 }

@@ -12,7 +12,7 @@ class Dashboard extends StatefulWidget{
 class DashboardPage extends State<Dashboard>{
   Widget currentWidget;
   int navIndex = 0;
-  String mAppBar = 'Demo History';
+  String mAppBar = 'History';
   @override
   void initState() {
     // TODO: implement initState
@@ -44,7 +44,7 @@ class DashboardPage extends State<Dashboard>{
           onTap: (int index) {
             setState((){
               this.navIndex = index;
-              mAppBar = 'Demo History';
+              mAppBar = 'History';
               if(navIndex == 0){
                 currentWidget = new DemoHistory();
               }
@@ -64,7 +64,7 @@ class DashboardPage extends State<Dashboard>{
                   'assets/images/history_icn.png',
                 height: 30.0,
                 width: 30.0,
-                color: navIndex == 0?CommonVar.app_theme_color:Colors.black,
+                color: navIndex == 0?CommonVar.app_theme_color:Colors.grey,
               ),
               title: new Text("History"),
             ),
@@ -73,7 +73,7 @@ class DashboardPage extends State<Dashboard>{
                 'assets/images/new_demo_icn.png',
                 height: 30.0,
                 width: 30.0,
-                color: navIndex == 1?CommonVar.app_theme_color:Colors.black,
+                color: navIndex == 1?CommonVar.app_theme_color:Colors.grey,
               ),
               title: new Text("New Demo"),
             ),
@@ -82,7 +82,7 @@ class DashboardPage extends State<Dashboard>{
                 'assets/images/profile_icn.png',
                 height: 30.0,
                 width: 30.0,
-                color: navIndex == 2?CommonVar.app_theme_color:Colors.black,
+                color: navIndex == 2?CommonVar.app_theme_color:Colors.grey,
               ),
               title: new Text("Profile"),
             ),

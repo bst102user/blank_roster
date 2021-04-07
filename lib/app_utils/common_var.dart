@@ -14,4 +14,6 @@ class CommonVar{
   static String FIRST_NAME_KEY = 'first_name_key';
   static String LAST_NAME_KEY = 'last_name_key';
   static String USER_MOBILE_KEY = 'user_mobile_key';
+  static String DRIVER1_FULL_NAME = 'driver1_full_name';
+  static String DRIVER2_FULL_NAME = 'driver2_full_name';
 }

@@ -1,3 +1,4 @@
+import 'package:demolight/app_utils/common_var.dart';
 import 'package:demolight/pages/driver1page.dart';
 import 'package:demolight/pages/driver2page.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,6 +10,7 @@ class DriverInfo extends StatefulWidget{
 class DriverInfoState extends State<DriverInfo>{
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
     // TODO: implement build
     return DefaultTabController(
       length: 2,
@@ -28,8 +30,8 @@ class DriverInfoState extends State<DriverInfo>{
         ),
         body: TabBarView(
           children: [
-            Driver1Page(),
-            Driver1Page(),
+            Driver1Page(true),
+            Driver1Page(false),
           ],
         ),
       ),

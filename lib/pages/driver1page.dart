@@ -9,9 +9,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 
 class Driver1Page extends StatefulWidget{
+  final bool isDriver1;
+  Driver1Page(this.isDriver1);
   Driver1PageState createState() => Driver1PageState();
 }
 class Driver1PageState extends State<Driver1Page>{
@@ -30,7 +33,7 @@ class Driver1PageState extends State<Driver1Page>{
     signatureGlobalKey.currentState.clear();
   }
 
-  gggg(){
+  gggg()async{
     String photoBase64Lic = "";
     String photoBase64Insu = "";
     if(licImgFile != null){
@@ -43,7 +46,7 @@ class Driver1PageState extends State<Driver1Page>{
       photoBase64Insu = base64Encode(imageBytes);
       print('photoBase64: '+photoBase64Insu);
     }
-    _saveMySignature().then((signBase64){
+    _saveMySignature().then((signBase64)async{
       List<String> mData = [];
       mData.add(fnameController.text);
       mData.add(lnameController.text);
@@ -52,14 +55,24 @@ class Driver1PageState extends State<Driver1Page>{
       mData.add(photoBase64Lic);
       mData.add(photoBase64Insu);
       mData.add(signBase64);
-      fnameController.text = '';
-      lnameController.text = '';
-      phoneController.text = '';
-      emailController.text = '';
-      _handleClearButtonPressed();
-
-      Navigator.push(context, MaterialPageRoute(
-          builder: (BuildContext context) => DemoVehicle(mData)));
+      if(_formKey.currentState.validate()){
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        if(widget.isDriver1) {
+          preferences.setString(CommonVar.DRIVER1_FULL_NAME,
+              fnameController.text + ' ' + lnameController.text);
+        }
+        else{
+          preferences.setString(CommonVar.DRIVER2_FULL_NAME,
+              fnameController.text + ' ' + lnameController.text);
+        }
+        Navigator.push(context, MaterialPageRoute(
+            builder: (BuildContext context) => DemoVehicle(mData)));
+        fnameController.text = '';
+        lnameController.text = '';
+        phoneController.text = '';
+        emailController.text = '';
+        _handleClearButtonPressed();
+      }
     });
   }
 
@@ -141,7 +154,7 @@ class Driver1PageState extends State<Driver1Page>{
           body: ListView(
             children: <Widget>[
               Container(
-                height: 100,
+                height: 50,
                 color: Colors.grey[200],
                 child: Center(
                   child: Row(
@@ -157,13 +170,14 @@ class Driver1PageState extends State<Driver1Page>{
                           children: <Widget>[
                             Image.asset(
                                 'assets/images/scan.png',
-                              height: 40.0,
-                              width: 40.0,
+                              height: 30.0,
+                              width: 30.0,
                             ),
                             Text(
                                 'SCAN',
                               style: TextStyle(
-                                color: CommonVar.app_theme_color
+                                color: CommonVar.app_theme_color,
+                                fontSize: 10.0
                               ),
                             )
                           ],
@@ -181,13 +195,14 @@ class Driver1PageState extends State<Driver1Page>{
                           children: <Widget>[
                             Image.asset(
                               'assets/images/licence.png',
-                              height: 40.0,
-                              width: 40.0,
+                              height: 30.0,
+                              width: 30.0,
                             ),
                             Text(
                               'LICENSE',
                               style: TextStyle(
-                                  color: CommonVar.app_theme_color
+                                  color: CommonVar.app_theme_color,
+                                fontSize: 10.0
                               ),
                             )
                           ],
@@ -204,13 +219,14 @@ class Driver1PageState extends State<Driver1Page>{
                           children: <Widget>[
                             Image.asset(
                               'assets/images/insurance.png',
-                              height: 40.0,
-                              width: 40.0,
+                              height: 30.0,
+                              width: 30.0,
                             ),
                             Text(
                               'INSURANCE',
                               style: TextStyle(
-                                  color: CommonVar.app_theme_color
+                                  color: CommonVar.app_theme_color,
+                                fontSize: 10.0
                               ),
                             )
                           ],
@@ -333,23 +349,19 @@ class Driver1PageState extends State<Driver1Page>{
                       Column(
                           children: [
                             Row(children: <Widget>[
-                              FlatButton(
-                                child: Text(
-                                    'Signed below',
-                                  style: TextStyle(
+                              Text(
+                                'Signed below',
+                                style: TextStyle(
                                     color: CommonVar.app_theme_color
-                                  ),
                                 ),
-                                onPressed: null,
                               ),
-                              FlatButton(
-                                child: Text('Clear'),
-                                onPressed: _handleClearButtonPressed,
-                              )
+                              InkWell(onTap: _handleClearButtonPressed,
+                                  child: Text('Clear'))
                             ], mainAxisAlignment: MainAxisAlignment.spaceBetween),
                             Padding(
-                                padding: EdgeInsets.all(10),
+                                padding: EdgeInsets.only(top:5.0,left: 10,right: 10.0),
                                 child: Container(
+                                  height: 150.0,
                                     child: SfSignaturePad(
                                         key: signatureGlobalKey,
                                         backgroundColor: Colors.white,
@@ -362,14 +374,10 @@ class Driver1PageState extends State<Driver1Page>{
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center),
                       Padding(
-                        padding: const EdgeInsets.only(top: 15.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
                         child: InkWell(
                           onTap: (){
                             gggg();
-                            // _saveMySignature();
-                            // List<String> preDetailList = addDataForSend();
-                            // Navigator.push(context, MaterialPageRoute(
-                            //     builder: (BuildContext context) => DemoVehicle(preDetailList)));
                           },
                           child: Container(
                             height: 45.0,

@@ -15,11 +15,14 @@ class SeeAllPhotosState extends State<SeeAllPhotos>{
     return SafeArea(
         child: Scaffold(
           appBar: AppBar(
-            title: Center(child: Text(
+            iconTheme: IconThemeData(
+              color: CommonVar.app_theme_color, //change your color here
+            ),
+            title: Text(
               'All Pictures',
               style: TextStyle(
                   color: CommonVar.app_theme_color
-              ),)),
+              ),),
             backgroundColor: Colors.white,
           ),
           body: Padding(

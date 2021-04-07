@@ -3,6 +3,7 @@ import 'dart:convert';//signature
 import 'package:demolight/app_utils/app_apis.dart';
 import 'package:demolight/app_utils/common_methods.dart';
 import 'package:demolight/app_utils/common_var.dart';
+import 'package:demolight/models/make_model_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -17,7 +18,12 @@ class DemoVehicle extends StatefulWidget{
 
 class DemoVehicleState extends State<DemoVehicle>{
   List<String> _locations = ['Walk In', 'Internet', 'Phone', 'Repeat', 'Referral', 'Be-Back'];
+  List<String> _yearSelesct = ['2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021'];
   String _selectedSource;
+  String _selectedYearStr;
+  Result selectedMake;
+  List<Result> resultList;
+  String selectModelStr;
   TextEditingController stockController = new TextEditingController();
   TextEditingController yearController = new TextEditingController();
   TextEditingController makeController = new TextEditingController();
@@ -27,16 +33,25 @@ class DemoVehicleState extends State<DemoVehicle>{
 
   DateTime _chosenDateTime;
   String startDateStr = '';
+  String startDateStrForServer = '';
   String endDateStr = '';
+  String endDateStrForServer = '';
   bool isStartDate;
   bool isEndDate;
+  String selectMakeStr;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  Future<String> getUserId()async{
+  Future<List<String>> getPreferenceData()async{
+    List<String> mPrefData = [];
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String userId = preferences.getString(CommonVar.USERID_KEY);
-    return userId;
+    String driver1name = preferences.getString(CommonVar.DRIVER1_FULL_NAME);
+    String driver2name = preferences.getString(CommonVar.DRIVER2_FULL_NAME);
+    mPrefData.add(userId);
+    mPrefData.add(driver1name);
+    mPrefData.add(driver2name);
+    return mPrefData;
   }
 
   Future<dynamic> submitDriverData()async{
@@ -45,28 +60,56 @@ class DemoVehicleState extends State<DemoVehicle>{
     }
     else {
       if (_formKey.currentState.validate()) {
-        getUserId().then((userId) async {
+        getPreferenceData().then((userId) async {
           CommonMethods.showAlertDialog(context);
+          /*
+          * $_POST['user_id']="2"
+$_POST['source']="google"
+$_POST['start_date']="2021-10-02"
+$_POST['end_date']="2021-10-05"
+$_POST['year']="2020"
+$_POST['make']="Maruti"
+$_POST['model']="Suzuki"
+$_POST['firstname']="Test"
+$_POST['lastname']="Team"
+$_POST['phone']="9988776655"
+$_POST['email']="testingteam2@gmail.com"
+$_POST['signature']=""
+$_POST['licence_pic']=""
+$_POST['insurance_pic']=""
+$_POST['firstname2']="Test"
+$_POST['lastname2']="Team"
+$_POST['phone2']="9988776655"
+$_POST['email2']="testingteam2@gmail.com"
+$_POST['signature2']=""
+$_POST['licence_pic2']=""
+$_POST['insurance_pic2']=""*/
           var mBody = {
-            "user_id": userId,
+            "user_id": userId[0],
+            "source": _selectedSource,
+            "start_date": startDateStrForServer,
+            "end_date": endDateStrForServer,
+            "year": _selectedYearStr,
+            "make": selectMakeStr,
+            "model": selectModelStr,
             "firstname": widget.preDetailsList[0],
             "lastname": widget.preDetailsList[1],
             "phone": widget.preDetailsList[2],
             "email": widget.preDetailsList[3],
-            "source": _selectedSource,
-            "start_date": startDateStr,
-            "end_date": endDateStr,
-            "year": yearController.text,
-            "make": makeController.text,
-            "model": modelController.text,
-            "driver1_name": driver1Controller.text,
-            "driver2_name": driver2Controller.text,
             "licence_pic": widget.preDetailsList[4],
             "insurance_pic": widget.preDetailsList[5],
             "signature": widget.preDetailsList[6],
+            "firstname2": widget.preDetailsList[0],
+            "lastname2": widget.preDetailsList[1],
+            "phone2": widget.preDetailsList[2],
+            "email2": widget.preDetailsList[3],
+            "licence_pic2": '',
+            "insurance_pic2": '',
+            "signature2": '',
           };
           print(mBody.toString());
           final response = await http.post(AppApis.SAVE_DRIVER_INFO, body: mBody);
+          print('response.statusCode: '+response.statusCode.toString());
           if (response.statusCode == 200) {
             Navigator.pop(context);
             print(response.body);
@@ -82,7 +125,7 @@ class DemoVehicleState extends State<DemoVehicle>{
       }
     }
   }
-
+  DateTime startSelectedDateTime;
   // Show the modal that contains the CupertinoDatePicker
   void _showDatePicker(ctx) {
     showCupertinoModalPopup(
@@ -115,14 +158,27 @@ class DemoVehicleState extends State<DemoVehicle>{
                           _chosenDateTime = new DateTime(now.year, now.month, now.day, now.hour, now.minute);
                         }
                         if(isStartDate){
-                          String parseDate = new DateFormat("MMM dd, yyyy HH:mm a").format(_chosenDateTime);
+                          String parseDate = new DateFormat("MMM dd, yyyy hh:mm a").format(_chosenDateTime);
                           startDateStr = parseDate;
-                          print(parseDate);
+                          startDateStrForServer = new DateFormat("yyyy-MM-dd").format(_chosenDateTime);
+                          startSelectedDateTime = new DateFormat("MMM dd, yyyy hh:mm a").parse(startDateStr);
+                          _chosenDateTime = new DateTime(startSelectedDateTime.year, startSelectedDateTime.month, startSelectedDateTime.day, startSelectedDateTime.hour, startSelectedDateTime.minute+15);
+                          String parseDateEndDate = new DateFormat("MMM dd, yyyy hh:mm a").format(_chosenDateTime);
+                          endDateStrForServer = new DateFormat("yyyy-MM-dd").format(_chosenDateTime);
+                          endDateStr = parseDateEndDate;
                         }
                         else if(isEndDate){
-                          String parseDate = new DateFormat("MMM dd, yyyy HH:mm a").format(_chosenDateTime);
+                          String parseDate = new DateFormat("MMM dd, yyyy hh:mm a").format(_chosenDateTime);
                           endDateStr = parseDate;
-                          print(parseDate);
+                          DateTime endSelectedDateTime = new DateFormat("MMM dd, yyyy hh:mm a").parse(endDateStr);
+                          int diff = endSelectedDateTime.difference(startSelectedDateTime).inMinutes;
+                          if(diff<15){
+                            CommonMethods.showAlertDialogWithSingleButton(context, 'End date should b greater then 15 minutes from start date');
+                          }
+                          else{
+                            endDateStr = parseDate;
+                            endDateStrForServer = new DateFormat("yyyy-MM-dd").format(endSelectedDateTime);
+                          }
                         }
                       });
                     },
@@ -132,18 +188,40 @@ class DemoVehicleState extends State<DemoVehicle>{
             ));
   }
 
+  getMakeModels(String year)async{
+    CommonMethods.showAlertDialog(context);
+    String mUrl = AppApis.GET_MAKE_MODEL+year+'?format=json';
+    final response = await http.get(mUrl);
+    if (response.statusCode == 200) {
+      Navigator.pop(context);
+      setState(() {
+        MakeModelModel makeModelModel = makeModelModelFromJson(response.body);
+        resultList = makeModelModel.results;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return SafeArea(
         child: Scaffold(
           appBar: AppBar(
-            automaticallyImplyLeading: false,
-            title: Center(child: Text(
+            iconTheme: IconThemeData(
+              color: CommonVar.app_theme_color, //change your color here
+            ),
+            title: Text(
               'Demo Vehicle',
               style: TextStyle(
                   color: CommonVar.app_theme_color
-              ),)),
+              ),
+            ),
             backgroundColor: Colors.white,
           ),
           body: Padding(
@@ -266,133 +344,186 @@ class DemoVehicleState extends State<DemoVehicle>{
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(top: 10.0),
-                        child: TextFormField(
-                          validator: (input) {
-                            if(input.isEmpty){
-                              return 'Provide year';
-                            }
-                          },
-                          controller: yearController,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            hintText: 'Enter year',
-                            hintStyle: TextStyle(fontSize: 16),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                width: 0,
-                                style: BorderStyle.none,
+                        child: Container(
+                          height: 40.0,
+                          width: 400.0 ,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.grey[200],
+                              ),
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.all(Radius.circular(15))
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                              hint: Padding(
+                                padding: const EdgeInsets.only(left: 5.0),
+                                child: Text('Please choose year'),
+                              ), // Not necessary for Option 1
+                              value: _selectedYearStr,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  _selectedYearStr = newValue;
+                                  getMakeModels(_selectedYearStr);
+                                });
+                              },
+                              items: _yearSelesct.map((yearSelect) {
+                                return DropdownMenuItem(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left:8.0),
+                                    child: new Text(yearSelect),
+                                  ),
+                                  value: yearSelect,
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        )
+                        ,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top:10.0),
+                        child: Container(
+                          height: 40.0,
+                          width: 400.0,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.grey[200],
+                              ),
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.all(Radius.circular(15))
+                          ),
+                          child: resultList==null?Padding(
+                            padding: const EdgeInsets.only(top: 10.0,left: 5.0),
+                            child: Text(
+                                'Select Make',
+                              style: TextStyle(
+                                color: Colors.grey
                               ),
                             ),
-                            filled: true,
-                            contentPadding: EdgeInsets.all(10),
-                            // fillColor: colorSearchBg,
+                          ):DropdownButtonHideUnderline(
+                            child: new DropdownButton<Result>(
+                              hint: Padding(
+                                padding: const EdgeInsets.only(left: 5.0),
+                                child: Text('Please choose Make'),
+                              ),
+                              value: selectedMake,
+                              isDense: true,
+                              onChanged: (Result newValue) {
+                                setState(() {
+                                  selectedMake = newValue;
+                                  selectModelStr = newValue.modelName;
+                                  selectMakeStr = newValue.makeName;
+                                });
+                                print(selectedMake);
+                              },
+                              items: resultList.map((Result map) {
+                                return new DropdownMenuItem<Result>(
+                                  value: map,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 5.0),
+                                    child: new Text(map.makeName+'-'+map.modelId.toString(),
+                                        style: new TextStyle(color: Colors.black)),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
                           ),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 10.0),
-                        child: TextFormField(
-                          validator: (input) {
-                            if(input.isEmpty){
-                              return 'Provide make';
-                            }
-                          },
-                          controller: makeController,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            hintText: 'Enter Make',
-                            hintStyle: TextStyle(fontSize: 16),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                width: 0,
-                                style: BorderStyle.none,
-                              ),
+                        child: Container(
+                            height: 40.0,
+                            width: 400.0,
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey[200],
+                                ),
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.all(Radius.circular(15))
                             ),
-                            filled: true,
-                            contentPadding: EdgeInsets.all(10),
-                            // fillColor: colorSearchBg,
-                          ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 5.0,top: 10.0),
+                              child: selectModelStr==null?Text(
+                                  'Model Name',
+                                style: TextStyle(
+                                  color: Colors.grey
+                                ),
+                              ):
+                              Text(
+                                  selectModelStr,
+                              ),
+                            )
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 10.0),
-                        child: TextFormField(
-                          validator: (input) {
-                            if(input.isEmpty){
-                              return 'Provide model';
-                            }
-                          },
-                          controller: modelController,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            hintText: 'Enter Model',
-                            hintStyle: TextStyle(fontSize: 16),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                width: 0,
-                                style: BorderStyle.none,
+                        child: Text('Driver1 name'),
+                      ),
+                      FutureBuilder(
+                        future: getPreferenceData(),
+                        builder: (context, snapshot){
+                          if(snapshot.data[1] == null){
+                            return Text('no name');
+                          }
+                          else{
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 5.0),
+                              child: Container(
+                                  height: 40.0,
+                                  width: 400.0,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.grey[200],
+                                      ),
+                                      color: Colors.grey[200],
+                                      borderRadius: BorderRadius.all(Radius.circular(15))
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 5.0,top: 10.0),
+                                    child: Text(
+                                      snapshot.data[1],
+                                    ),
+                                  )
                               ),
-                            ),
-                            filled: true,
-                            contentPadding: EdgeInsets.all(10),
-                            // fillColor: colorSearchBg,
-                          ),
-                        ),
+                            );
+                          }
+                        },
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 10.0),
-                        child: TextFormField(
-                          validator: (input) {
-                            if(input.isEmpty){
-                              return 'Provide driver1 name';
-                            }
-                          },
-                          controller: driver1Controller,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            hintText: 'Enter Driver1 name',
-                            hintStyle: TextStyle(fontSize: 16),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                width: 0,
-                                style: BorderStyle.none,
-                              ),
-                            ),
-                            filled: true,
-                            contentPadding: EdgeInsets.all(10),
-                            // fillColor: colorSearchBg,
-                          ),
-                        ),
+                        child: Text('Driver2 name'),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: TextFormField(
-                          validator: (input) {
-                            if(input.isEmpty){
-                              return 'Provide driver2 name';
-                            }
-                          },
-                          controller: driver2Controller,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                            hintText: 'Enter Driver2 name',
-                            hintStyle: TextStyle(fontSize: 16),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                width: 0,
-                                style: BorderStyle.none,
+                      FutureBuilder(
+                        future: getPreferenceData(),
+                        builder: (context, snapshot){
+                          if(snapshot.data[2] == null){
+                            return Text('no name');
+                          }
+                          else{
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 5.0),
+                              child: Container(
+                                  height: 40.0,
+                                  width: 400.0,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.grey[200],
+                                      ),
+                                      color: Colors.grey[200],
+                                      borderRadius: BorderRadius.all(Radius.circular(15))
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 5.0,top: 10.0),
+                                    child: Text(
+                                      snapshot.data[2],
+                                    ),
+                                  )
                               ),
-                            ),
-                            filled: true,
-                            contentPadding: EdgeInsets.all(10),
-                            // fillColor: colorSearchBg,
-                          ),
-                        ),
+                            );
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -402,8 +533,6 @@ class DemoVehicleState extends State<DemoVehicle>{
                   child: InkWell(
                     onTap: (){
                       submitDriverData();
-                      // Navigator.push(context, MaterialPageRoute(
-                      //     builder: (BuildContext context) => DemoVehicle()));
                     },
                     child: Container(
                       height: 45.0,
