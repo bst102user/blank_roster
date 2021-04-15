@@ -20,7 +20,7 @@ class ProfilePage extends StatefulWidget{
 }
 
 class ProfilePageState extends State<ProfilePage>{
-  TextEditingController sortTec = new TextEditingController();
+  TextEditingController storeTec = new TextEditingController();
   TextEditingController usernameTec = new TextEditingController();
   TextEditingController fnameTec = new TextEditingController();
   TextEditingController lnameTec = new TextEditingController();
@@ -58,7 +58,7 @@ class ProfilePageState extends State<ProfilePage>{
       Navigator.pop(context);
       GetProfileModel profileModel = getProfileModelFromJson(response.body);
       Profileresponse profileresponse = profileModel.profileresponse;
-      sortTec.text = profileresponse.sortname;
+      storeTec.text = profileresponse.storename;
       usernameTec.text = profileresponse.username;
       fnameTec.text = profileresponse.firstname;
       lnameTec.text = profileresponse.lastname;
@@ -74,7 +74,7 @@ class ProfilePageState extends State<ProfilePage>{
     var mBody = {
       "id": userId,
       "username": usernameTec.text,
-      "sortname": sortTec.text,
+      "storename": storeTec.text,
       "firstname": fnameTec.text,
       "lastname": lnameTec.text,
       "mobile": mobileTec.text,
@@ -131,18 +131,22 @@ class ProfilePageState extends State<ProfilePage>{
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.only(bottom: 5.0,top: 20.0),
-                child: Text('Sort Name'),
+                child: Text(
+                    'Store Name',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w800
+                  ),),
               ),
               TextFormField(
                 validator: (input) {
                   if(input.isEmpty){
-                    return 'Provide an sort name';
+                    return 'Provide an store name';
                   }
                 },
-                controller: sortTec,
+                controller: storeTec,
                 keyboardType: TextInputType.text,
                 decoration: InputDecoration(
-                  hintText: 'Enter sort name',
+                  hintText: 'Enter store name',
                   hintStyle: TextStyle(fontSize: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -158,7 +162,12 @@ class ProfilePageState extends State<ProfilePage>{
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 5.0,top: 20.0),
-                child: Text('Username'),
+                child: Text(
+                    'Username',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800
+                  ),
+                ),
               ),
               TextFormField(
                 validator: (input) {
@@ -185,7 +194,11 @@ class ProfilePageState extends State<ProfilePage>{
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 5.0,top: 20.0),
-                child: Text('First Name'),
+                child: Text(
+                    'First Name',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w800
+                  ),),
               ),
               TextFormField(
                 validator: (input) {
@@ -212,7 +225,11 @@ class ProfilePageState extends State<ProfilePage>{
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 5.0,top: 20.0),
-                child: Text('Last Name'),
+                child: Text(
+                    'Last Name',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w800
+                  ),),
               ),
               TextFormField(
                 validator: (input) {
@@ -239,7 +256,11 @@ class ProfilePageState extends State<ProfilePage>{
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 5.0,top: 20.0),
-                child: Text('Mobile #'),
+                child: Text(
+                    'Mobile #',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w800
+                  ),),
               ),
               TextFormField(
                 validator: (input) {
@@ -266,7 +287,7 @@ class ProfilePageState extends State<ProfilePage>{
               ),
               InkWell(
                 onTap: (){
-                  print(sortTec.text+'yyyy');
+                  print(storeTec.text+'yyyy');
                 },
                 child: Center(
                   child: Padding(
@@ -284,7 +305,11 @@ class ProfilePageState extends State<ProfilePage>{
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 5.0,top: 20.0),
-                child: Text('New Password'),
+                child: Text(
+                    'New Password',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w800
+                  ),),
               ),
               TextFormField(
                 validator: (input) {
@@ -312,7 +337,11 @@ class ProfilePageState extends State<ProfilePage>{
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 5.0,top: 20.0),
-                child: Text('Confirm Password'),
+                child: Text(
+                    'Confirm Password',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w800
+                  ),),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 20.0),

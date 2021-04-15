@@ -195,7 +195,8 @@ class DemoHistoryState extends State<DemoHistory> {
                                                   child: _searchResult[i].licencePic != ''?
                                                   Image.network(
                                                       AppApis.IMAGE_BASE_URL+_searchResult[i].licencePic,
-                                                    width: deviceWidth*0.3,
+                                                    width: deviceWidth*0.4,
+                                                    height: deviceWidth*0.15,
                                                   ):
                                                   Icon(Icons.not_interested,
                                                     color: Colors.grey,
@@ -219,7 +220,7 @@ class DemoHistoryState extends State<DemoHistory> {
                                                         ),
                                                       ),
                                                       Text(
-                                                        'year #'+_searchResult[i].year,
+                                                        'YEAR #'+_searchResult[i].year,
                                                         style: TextStyle(
                                                           color: Colors.black,
                                                         ),
@@ -296,6 +297,7 @@ class DemoHistoryState extends State<DemoHistory> {
                                                   child: sDriver[i].licencePic != ''?Image.network(
                                                     AppApis.IMAGE_BASE_URL+sDriver[i].licencePic,
                                                     width: deviceWidth*0.3,
+                                                    height: deviceWidth*0.2,
                                                   ):Icon(
                                                       Icons.not_interested,
                                                     color: Colors.grey,
@@ -320,7 +322,7 @@ class DemoHistoryState extends State<DemoHistory> {
                                                         ),
                                                       ),
                                                       Text(
-                                                        'year #'+sDriver[i].year,
+                                                        'YEAR #'+sDriver[i].year,
                                                         style: TextStyle(
                                                           color: Colors.black,
                                                         ),

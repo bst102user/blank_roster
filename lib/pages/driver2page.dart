@@ -14,8 +14,10 @@ import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 
 class Driver2Page extends StatefulWidget{
   Driver2PageState createState() => Driver2PageState();
+  Driver2PageState dps = new Driver2PageState();
 }
-class Driver2PageState extends State<Driver2Page>{
+class Driver2PageState extends State<Driver2Page> with
+    AutomaticKeepAliveClientMixin<Driver2Page>{
   TextEditingController fnameController = new TextEditingController();
   TextEditingController lnameController = new TextEditingController();
   TextEditingController phoneController = new TextEditingController();
@@ -26,64 +28,44 @@ class Driver2PageState extends State<Driver2Page>{
   bool isLicImg;
   bool isInsuImg;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  SharedPreferences preferences;
 
   void _handleClearButtonPressed() {
     signatureGlobalKey.currentState.clear();
   }
 
-  gggg()async{
-    String photoBase64Lic = "";
-    String photoBase64Insu = "";
-    if(licImgFile != null){
-      List<int> imageBytes = licImgFile.readAsBytesSync();
-      photoBase64Lic = base64Encode(imageBytes);
-      print('photoBase64: '+photoBase64Lic);
-    }
-    if(insuImgFile != null){
-      List<int> imageBytes = insuImgFile.readAsBytesSync();
-      photoBase64Insu = base64Encode(imageBytes);
-      print('photoBase64: '+photoBase64Insu);
-    }
-    _saveMySignature().then((signBase64)async{
-      List<String> mData = [];
-      mData.add(fnameController.text);
-      mData.add(lnameController.text);
-      mData.add(phoneController.text);
-      mData.add(emailController.text);
-      mData.add(photoBase64Lic);
-      mData.add(photoBase64Insu);
-      mData.add(signBase64);
-      if(_formKey.currentState.validate()){
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        preferences.setString(CommonVar.DRIVER2_FULL_NAME,
-            fnameController.text + ' ' + lnameController.text);
-        Navigator.push(context, MaterialPageRoute(
-            builder: (BuildContext context) => DemoVehicle(mData)));
-        // fnameController.text = '';
-        // lnameController.text = '';
-        // phoneController.text = '';
-        // emailController.text = '';
-        // _handleClearButtonPressed();
-      }
-    });
+  @override
+  bool get wantKeepAlive => true;
+
+  getPref()async{
+    preferences = await SharedPreferences.getInstance();
   }
 
-  Future<String> _saveMySignature() async {
-    if (_formKey.currentState.validate()){
-      final data = await signatureGlobalKey.currentState.toImage(pixelRatio: 1.0);
-      ByteData bytes = await data.toByteData(format: ui.ImageByteFormat.png);
-      Uint8List tempImg = await bytes.buffer.asUint8List();
-      if (tempImg != null) {
-        final tempDir = await getTemporaryDirectory();
-        String timeStamp = DateTime.now().millisecondsSinceEpoch.toString();
-        final file = await new File('${tempDir.path}/image.jpg').create();
-        List<int> imageBytes = file.readAsBytesSync();
-        String photoBase64Sign = base64Encode(imageBytes);
-        return photoBase64Sign;
-      }
-      else {
-        return '';
-      }
+  @override
+  initState(){
+    super.initState();
+    getPref();
+  }
+
+  Future<File> getSignFile() async {
+    final dataTest = await signatureGlobalKey.currentState.toImage(pixelRatio: 1.0);
+    ByteData data = await dataTest.toByteData(format: ui.ImageByteFormat.png);
+    final buffer = data.buffer;
+    Directory tempDir = await getTemporaryDirectory();
+    String tempPath = tempDir.path;
+    var filePath = tempPath + '/file_02.tmp';
+    return new File(filePath).writeAsBytes(
+        buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+  }
+
+  _saveMySignature()async{
+    try {
+      File file = await getSignFile();
+      List<int> imageBytes = file.readAsBytesSync();
+      String photoBase64Sign = base64Encode(imageBytes);
+      preferences.setString('sign2_pref', photoBase64Sign);
+    } catch(e) {
+      // catch errors here
     }
   }
 
@@ -94,12 +76,16 @@ class Driver2PageState extends State<Driver2Page>{
       print("You selected  image : " + mFile.path);
       setState(() {
         if(isLicImg) {
-          debugPrint("SELECTED IMAGE PICK   $mFile");
-          licImgFile = mFile;
+          // debugPrint("SELECTED IMAGE PICK   $mFile");
+          // licImgFile = mFile;
+          List<int> imageBytes = mFile.readAsBytesSync();
+          String photoBase64Lic = base64Encode(imageBytes);
+          preferences.setString('lic2_pref', photoBase64Lic);
         }
         else if(isInsuImg){
-          debugPrint("SELECTED IMAGE PICK   $mFile");
-          insuImgFile = mFile;
+          List<int> imageBytes = mFile.readAsBytesSync();
+          String photoBase64Lic = base64Encode(imageBytes);
+          preferences.setString('ins2_pref', photoBase64Lic);
         }
       });
     } else {
@@ -146,7 +132,7 @@ class Driver2PageState extends State<Driver2Page>{
         body: ListView(
           children: <Widget>[
             Container(
-              height: 50,
+              height: 80,
               color: Colors.grey[200],
               child: Center(
                 child: Row(
@@ -155,15 +141,15 @@ class Driver2PageState extends State<Driver2Page>{
                     InkWell(
                       onTap: (){
                         Navigator.push(context,MaterialPageRoute(
-                            builder: (BuildContext context) => ScanPage(0)));
+                            builder: (BuildContext context) => ScanPage()));
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Image.asset(
                             'assets/images/scan.png',
-                            height: 30.0,
-                            width: 30.0,
+                            height: 60.0,
+                            width: 60.0,
                           ),
                           Text(
                             'SCAN',
@@ -187,8 +173,8 @@ class Driver2PageState extends State<Driver2Page>{
                         children: <Widget>[
                           Image.asset(
                             'assets/images/licence.png',
-                            height: 30.0,
-                            width: 30.0,
+                            height: 60.0,
+                            width: 60.0,
                           ),
                           Text(
                             'LICENSE',
@@ -211,8 +197,8 @@ class Driver2PageState extends State<Driver2Page>{
                         children: <Widget>[
                           Image.asset(
                             'assets/images/insurance.png',
-                            height: 30.0,
-                            width: 30.0,
+                            height: 60.0,
+                            width: 60.0,
                           ),
                           Text(
                             'INSURANCE',
@@ -235,10 +221,8 @@ class Driver2PageState extends State<Driver2Page>{
                 child: Column(
                   children: <Widget>[
                     TextFormField(
-                      validator: (input) {
-                        if(input.isEmpty){
-                          return 'Provide first name';
-                        }
+                      onChanged: (context){
+                        preferences.setString('fname2_pref', fnameController.text);
                       },
                       controller: fnameController,
                       keyboardType: TextInputType.text,
@@ -260,10 +244,8 @@ class Driver2PageState extends State<Driver2Page>{
                     Padding(
                       padding: const EdgeInsets.only(top:10.0),
                       child: TextFormField(
-                        validator: (input) {
-                          if(input.isEmpty){
-                            return 'Provide last name';
-                          }
+                        onChanged: (context){
+                          preferences.setString('lname2_pref', fnameController.text);
                         },
                         controller: lnameController,
                         keyboardType: TextInputType.text,
@@ -286,10 +268,8 @@ class Driver2PageState extends State<Driver2Page>{
                     Padding(
                       padding: const EdgeInsets.only(top:10.0),
                       child: TextFormField(
-                        validator: (input) {
-                          if(input.isEmpty){
-                            return 'Provide phone number';
-                          }
+                        onChanged: (context){
+                          preferences.setString('phone2_pref', fnameController.text);
                         },
                         controller: phoneController,
                         keyboardType: TextInputType.phone,
@@ -312,10 +292,8 @@ class Driver2PageState extends State<Driver2Page>{
                     Padding(
                       padding: const EdgeInsets.only(top:10.0),
                       child: TextFormField(
-                        validator: (input) {
-                          if(input.isEmpty){
-                            return 'Provide an email';
-                          }
+                        onChanged: (context){
+                          preferences.setString('email2_pref', fnameController.text);
                         },
                         controller: emailController,
                         keyboardType: TextInputType.emailAddress,
@@ -359,29 +337,16 @@ class Driver2PageState extends State<Driver2Page>{
                                       backgroundColor: Colors.white,
                                       strokeColor: Colors.black,
                                       minimumStrokeWidth: 1.0,
-                                      maximumStrokeWidth: 4.0),
+                                      maximumStrokeWidth: 4.0,
+                                      onSignEnd: (){
+                                        _saveMySignature();
+                                      },
+                                  ),
                                   decoration:
                                   BoxDecoration(border: Border.all(color: Colors.white)))),
                         ],
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
-                      child: InkWell(
-                        onTap: (){
-                          gggg();
-                        },
-                        child: Container(
-                          height: 45.0,
-                          decoration: new BoxDecoration(
-                            color: CommonVar.app_theme_color,
-                            //border: new Border.all(color: Colors.white, width: 2.0),
-                            borderRadius: new BorderRadius.circular(10.0),
-                          ),
-                          child: Center(child: new Text('Vehicle', style: new TextStyle(fontSize: 18.0, color: Colors.white),),),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),

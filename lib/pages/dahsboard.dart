@@ -1,6 +1,7 @@
 import 'package:demolight/app_utils/common_var.dart';
 import 'package:demolight/pages/demo_history.dart';
 import 'package:demolight/pages/driver_info.dart';
+import 'package:demolight/pages/login_page.dart';
 import 'package:demolight/pages/profile_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,16 +22,63 @@ class DashboardPage extends State<Dashboard>{
     // logout();
   }
 
-  void logout()async{
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    preferences.setBool('is_login', false);
+  showLogoutDialog() {
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Yes"),
+      onPressed: () async {
+        SharedPreferences mPref = await SharedPreferences.getInstance();
+        mPref.setBool("is_login", false);
+        Navigator.pop(context);
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => LoginPage()),
+            ModalRoute.withName("/login"));
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Logout"),
+      content: Text("Would you like to logout from the Application"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return SafeArea(
       child: Scaffold(
         appBar: navIndex == 2?null:AppBar(
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                Icons.logout,
+                color: CommonVar.app_theme_color,
+              ),
+              onPressed: () {
+                showLogoutDialog();
+              },
+            )
+          ],
           title: Center(child: Text(
               mAppBar,
           style: TextStyle(

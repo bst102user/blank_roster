@@ -31,7 +31,7 @@ class Profileresponse {
     this.username,
     this.password,
     this.userType,
-    this.sortname,
+    this.storename,
     this.firstname,
     this.lastname,
     this.mobile,
@@ -44,7 +44,7 @@ class Profileresponse {
   String username;
   String password;
   String userType;
-  String sortname;
+  String storename;
   String firstname;
   String lastname;
   String mobile;
@@ -57,7 +57,7 @@ class Profileresponse {
     username: json["username"],
     password: json["password"],
     userType: json["user_type"],
-    sortname: json["sortname"],
+    storename: json["storename"],
     firstname: json["firstname"],
     lastname: json["lastname"],
     mobile: json["mobile"],
@@ -71,7 +71,7 @@ class Profileresponse {
     "username": username,
     "password": password,
     "user_type": userType,
-    "sortname": sortname,
+    "storename": storename,
     "firstname": firstname,
     "lastname": lastname,
     "mobile": mobile,

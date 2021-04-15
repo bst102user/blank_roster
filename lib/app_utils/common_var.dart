@@ -10,7 +10,7 @@ class CommonVar{
   static String USER_EMAIL_KEY = 'user_email';
   static String USER_STATUS_KEY = 'user_status';
   static String IS_LOGIN_KEY = 'is_login';
-  static String SORT_NAME_KEY = 'sort_name_key';
+  static String store_NAME_KEY = 'store_name_key';
   static String FIRST_NAME_KEY = 'first_name_key';
   static String LAST_NAME_KEY = 'last_name_key';
   static String USER_MOBILE_KEY = 'user_mobile_key';

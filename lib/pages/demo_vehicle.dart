@@ -5,6 +5,7 @@ import 'package:demolight/app_utils/common_methods.dart';
 import 'package:demolight/app_utils/common_var.dart';
 import 'package:demolight/models/make_model.dart';
 import 'package:demolight/models/model_model.dart';
+import 'package:demolight/pages/dahsboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -12,8 +13,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class DemoVehicle extends StatefulWidget{
-  final List<String> preDetailsList;
-  DemoVehicle(this.preDetailsList);
   DemoVehicleState createState() => DemoVehicleState();
 }
 
@@ -50,8 +49,8 @@ class DemoVehicleState extends State<DemoVehicle>{
     List<String> mPrefData = [];
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String userId = preferences.getString(CommonVar.USERID_KEY);
-    String driver1name = preferences.getString(CommonVar.DRIVER1_FULL_NAME);
-    String driver2name = preferences.getString(CommonVar.DRIVER2_FULL_NAME);
+    String driver1name = preferences.getString('fname1_pref')+' '+preferences.getString('lname1_pref');
+    String driver2name = preferences.getString('fname2_pref')+' '+preferences.getString('lname2_pref');
     mPrefData.add(userId);
     mPrefData.add(driver1name);
     mPrefData.add(driver2name);
@@ -59,53 +58,67 @@ class DemoVehicleState extends State<DemoVehicle>{
   }
 
   Future<dynamic> submitDriverData()async{
-    if(_selectedSource == null || startDateStr == '' || endDateStr == ''){
-      CommonMethods.showAlertDialogWithSingleButton(context,'Please select Source, start date and end date');
-    }
-    else {
-      if (_formKey.currentState.validate()) {
-        getPreferenceData().then((userId) async {
-          CommonMethods.showAlertDialog(context);
-          var mBody = {
-            "user_id": userId[0],
-            "source": _selectedSource,
-            "start_date": startDateStrForServer,
-            "end_date": endDateStrForServer,
-            "year": _selectedYearStr,
-            "make": selectMakeStr,
-            "model": selectModelStr,
-            "firstname": widget.preDetailsList[0],
-            "lastname": widget.preDetailsList[1],
-            "phone": widget.preDetailsList[2],
-            "email": widget.preDetailsList[3],
-            "licence_pic": widget.preDetailsList[4],
-            "insurance_pic": widget.preDetailsList[5],
-            "signature": widget.preDetailsList[6],
-            "firstname2": widget.preDetailsList[0],
-            "lastname2": widget.preDetailsList[1],
-            "phone2": widget.preDetailsList[2],
-            "email2": widget.preDetailsList[3],
-            "licence_pic2": '',
-            "insurance_pic2": '',
-            "signature2": '',
-          };
-          print(mBody.toString());
-          final response = await http.post(AppApis.SAVE_DRIVER_INFO, body: mBody);
-          print('response.statusCode: '+response.statusCode.toString());
-          if (response.statusCode == 200) {
-            Navigator.pop(context);
-            print(response.body);
-            Map<String, dynamic> d = json.decode(response.body.trim());
-            var fullObj = d["driverinforesponse"];
-            var result = fullObj['result'];
-            if (result == 'true') {
-              Navigator.pop(context);
-            }
-            CommonMethods.showToast(fullObj['massage']);
-          }
-        });
+    getPreferenceData().then((userId) async {
+      CommonMethods.showAlertDialog(context);
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      var mBody = {
+        "user_id": userId[0],
+        "source": _selectedSource==null?'':_selectedSource,
+        "start_date": startDateStrForServer,
+        "end_date": endDateStrForServer,
+        "stock": stockController.text,
+        "year": _selectedYearStr==null?'':_selectedYearStr,
+        "make": selectMakeStr==null?'':selectMakeStr,
+        "model": selectModelStr==null?'':selectModelStr,
+        "firstname": pref.get('fname1_pref'),
+        "lastname": pref.get('lname1_pref'),
+        "phone": pref.get('phone1_pref'),
+        "email": pref.get('email1_pref'),
+        "licence_pic": pref.get('lic1_pref'),
+        "insurance_pic": pref.get('ins1_pref'),
+        "signature": pref.get('sign1_pref')==null?'':pref.get('sign1_pref'),
+        "firstname2": pref.get('fname2_pref'),
+        "lastname2": pref.get('lname2_pref'),
+        "phone2": pref.get('phone2_pref'),
+        "email2": pref.get('email2_pref'),
+        "licence_pic2": pref.get('lic2_pref'),
+        "insurance_pic2": pref.get('ins2_pref'),
+        "signature2": pref.get('sign2_pref')==null?'':pref.get('sign2_pref'),
+      };
+      print(mBody.toString());
+      final response = await http.post(AppApis.SAVE_DRIVER_INFO, body: mBody);
+      print('response.statusCode: '+response.statusCode.toString());
+      if (response.statusCode == 200) {
+        Navigator.pop(context);
+        print(response.body);
+        Map<String, dynamic> d = json.decode(response.body.trim());
+        var fullObj = d["driverinforesponse"];
+        var result = fullObj['result'];
+        if (result == 'true') {
+          _removePrefData();
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+              Dashboard()), (Route<dynamic> route) => false);
+        }
+        CommonMethods.showToast(fullObj['massage']);
       }
-    }
+    });
+  }
+  _removePrefData()async{
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.setString('fname1_pref', '');
+    preferences.setString('lname1_pref', '');
+    preferences.setString('phone1_pref', '');
+    preferences.setString('email1_pref', '');
+    preferences.setString('lic1_pref', '');
+    preferences.setString('ins1_pref', '');
+    preferences.setString('sign1_pref', '');
+    preferences.setString('fname2_pref', '');
+    preferences.setString('lname2_pref', '');
+    preferences.setString('phone2_pref', '');
+    preferences.setString('email2_pref', '');
+    preferences.setString('lic2_pref', '');
+    preferences.setString('ins2_pref', '');
+    preferences.setString('sign2_pref', '');
   }
   DateTime startSelectedDateTime;
   // Show the modal that contains the CupertinoDatePicker
@@ -345,7 +358,35 @@ class DemoVehicleState extends State<DemoVehicle>{
                 Form(
                   key: _formKey,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 5.0,top: 20.0),
+                        child: Text(
+                          'Stock #',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w800
+                          ),
+                        ),
+                      ),
+                      TextFormField(
+                        controller: stockController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'Enter Stock',
+                          hintStyle: TextStyle(fontSize: 16),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              width: 0,
+                              style: BorderStyle.none,
+                            ),
+                          ),
+                          filled: true,
+                          contentPadding: EdgeInsets.all(10),
+                          // fillColor: colorSearchBg,
+                        ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(top: 10.0),
                         child: Container(
@@ -486,7 +527,12 @@ class DemoVehicleState extends State<DemoVehicle>{
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 10.0),
-                        child: Text('Driver1 name'),
+                        child: Text(
+                            'Driver1 name',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w800
+                          ),
+                        ),
                       ),
                       FutureBuilder(
                         future: getPreferenceData(),
@@ -520,7 +566,12 @@ class DemoVehicleState extends State<DemoVehicle>{
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 10.0),
-                        child: Text('Driver2 name'),
+                        child: Text(
+                            'Driver2 name',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w800
+                          ),
+                        ),
                       ),
                       FutureBuilder(
                         future: getPreferenceData(),

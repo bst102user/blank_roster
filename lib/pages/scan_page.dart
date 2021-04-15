@@ -5,9 +5,9 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:demolight/app_utils/common_var.dart';
 import 'dart:io';
 
+import 'camera.dart';
+
 class ScanPage extends StatefulWidget{
-  final int index;
-  ScanPage(this.index);
   ScanPageState createState() => ScanPageState();
 }
 
@@ -15,6 +15,7 @@ class ScanPageState extends State<ScanPage>{
   Barcode result;
   QRViewController controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  String messageText = 'Back of licence';
 
   @override
   void reassemble() {
@@ -30,15 +31,16 @@ class ScanPageState extends State<ScanPage>{
     double deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-            child: Text(
-              'Scan Barcode',
-              style: TextStyle(
-                  color: CommonVar.app_theme_color
-              ),
-            )
+        iconTheme: IconThemeData(
+          color: CommonVar.app_theme_color, //change your color here
         ),
-        automaticallyImplyLeading: false,
+        title: Text(
+          'Scan Barcode',
+          style: TextStyle(
+              color: CommonVar.app_theme_color
+          ),
+        ),
+        // automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
       ),
       body: Column(
@@ -57,7 +59,7 @@ class ScanPageState extends State<ScanPage>{
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Text(
-                          'Back of licence',
+                          messageText,
                           style: TextStyle(
                             fontSize: 17.0
                           ),
@@ -88,10 +90,11 @@ class ScanPageState extends State<ScanPage>{
                       ),
                       InkWell(
                         onTap: (){
-                          Navigator.pop(context);
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (BuildContext context) => Camera()));
                         },
                         child: Text(
-                          'STOP',
+                          'NEXT',
                           style: TextStyle(
                               color: CommonVar.app_theme_color
                           ),
@@ -141,6 +144,9 @@ class ScanPageState extends State<ScanPage>{
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         result = scanData;
+        messageText = 'licence info not valid';
+        print('result: '+result.toString());
+        // Navigator.pop(context, scanData);
       });
     });
   }

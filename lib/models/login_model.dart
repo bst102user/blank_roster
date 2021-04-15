@@ -33,7 +33,7 @@ class Loginresponse {
     this.userType,
     this.status,
     this.result,
-    this.sortname,
+    this.storename,
     this.firstname,
     this.lastname,
     this.mobile,
@@ -46,7 +46,7 @@ class Loginresponse {
   String userType;
   String status;
   String result;
-  String sortname;
+  String storename;
   String firstname;
   String lastname;
   String mobile;
@@ -59,7 +59,7 @@ class Loginresponse {
     userType: json["user_type"],
     status: json["status"],
     result: json["result"],
-    sortname: json["sortname"],
+    storename: json["storename"],
     firstname: json["firstname"],
     lastname: json["lastname"],
     mobile: json["mobile"],
@@ -73,7 +73,7 @@ class Loginresponse {
     "user_type": userType,
     "status": status,
     "result": result,
-    "sortname": sortname,
+    "storename": storename,
     "firstname": firstname,
     "lastname": lastname,
     "mobile": mobile,

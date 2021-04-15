@@ -1,5 +1,5 @@
 class AppApis{
-  static String BASE_URL = 'http://bstwebdemo.co.in/client/development/demolight/';
+  static String BASE_URL = 'https://bstwebdemo.co.in/client/development/demolight/';
   static String LOGIN_USER = BASE_URL+'users/login';
   static String GET_PROFILE = BASE_URL+'users/profile';
   static String UPDATE_PROFILE = BASE_URL+'users/updateProfile';

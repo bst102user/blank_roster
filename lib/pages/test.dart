@@ -1,74 +1,67 @@
-import 'package:flutter/material.dart';
+import 'package:demolight/app_utils/global_state.dart';
+import 'package:flutter_web/material.dart';
+import 'package:flutter_web/widgets.dart';
 
-// void main() {
-//   runApp(new MaterialApp(home: new FocusVisibilityDemo()));
-// }
-
-class FocusVisibilityDemo extends StatefulWidget {
-  @override
-  _FocusVisibilityDemoState createState() => new _FocusVisibilityDemoState();
+void main() {
+  runApp(new MyApp());
 }
 
-
-class _FocusVisibilityDemoState extends State<FocusVisibilityDemo> {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(title: new Text('Text Dialog Demo')),
-      body: new Center(
-        child: new RaisedButton(
-          onPressed: _showDialog,
-          child: new Text("Push Me"),
+    return new MaterialApp(
+      home: new Scaffold(
+        body: new Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            new MyStatefulWidget1(),
+            new MyStatefulWidget2(),
+          ],
         ),
       ),
     );
   }
+}
 
-  _showDialog() async {
-    await showDialog<String>(
-      context: context,
-      child: new _SystemPadding(child: new AlertDialog(
-        contentPadding: const EdgeInsets.all(16.0),
-        content: new Row(
-          children: <Widget>[
-            new Expanded(
-              child: new TextField(
-                autofocus: true,
-                decoration: new InputDecoration(
-                    labelText: 'Full Name', hintText: 'eg. John Smith'),
-              ),
-            )
-          ],
-        ),
-        actions: <Widget>[
-          new FlatButton(
-              child: const Text('CANCEL'),
-              onPressed: () {
-                Navigator.pop(context);
-              }),
-          new FlatButton(
-              child: const Text('OPEN'),
-              onPressed: () {
-                Navigator.pop(context);
-              })
-        ],
-      ),),
+class MyStatefulWidget1 extends StatefulWidget {
+  State createState() => new MyStatefulWidget1State();
+}
+
+class MyStatefulWidget1State extends State<MyStatefulWidget1> {
+  final titleController = TextEditingController();
+
+  titleTextValue() {
+    print("title text field: ${titleController.text}");
+    return titleController.text;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    store.set("titleTextValue", titleTextValue);
+    return TextField(controller: titleController);
+  }
+}
+
+class MyStatefulWidget2 extends StatefulWidget {
+  State createState() => new MyStatefulWidget2State();
+}
+
+class MyStatefulWidget2State extends State<MyStatefulWidget2> {
+  String _text = 'PRESS ME';
+
+  @override
+  Widget build(BuildContext context) {
+    var titleTextValue = store.get("titleTextValue");
+    return new Center(
+      child: new RaisedButton(
+          child: new Text(_text),
+          onPressed: () {
+            print('title is ' + titleTextValue());
+          }),
     );
   }
 }
 
 
-class _SystemPadding extends StatelessWidget {
-  final Widget child;
 
-  _SystemPadding({Key key, this.child}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    var mediaQuery = MediaQuery.of(context);
-    return new AnimatedContainer(
-        padding: mediaQuery.viewInsets,
-        duration: const Duration(milliseconds: 300),
-        child: child);
-  }
-}
+final GlobalState store = GlobalState.instance;

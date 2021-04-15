@@ -36,7 +36,6 @@ class LoginPageState extends State<LoginPage>{
         print(response.body);
         LoginModel loginModel = loginModelFromJson(response.body);
         Loginresponse loginResModel = loginModel.loginresponse;
-        // Profileresponse loginResModel = loginModel.profileresponse;
         String result = loginResModel.result;
         if (result == 'true') {
           SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -45,12 +44,15 @@ class LoginPageState extends State<LoginPage>{
           preferences.setString(CommonVar.USER_EMAIL_KEY, loginResModel.email);
           preferences.setString(CommonVar.USERNAME_KEY, loginResModel.username);
           preferences.setString(CommonVar.USER_STATUS_KEY, loginResModel.status);
-          preferences.setString(CommonVar.SORT_NAME_KEY, loginResModel.sortname);
+          preferences.setString(CommonVar.store_NAME_KEY, loginResModel.storename);
           preferences.setString(CommonVar.FIRST_NAME_KEY, loginResModel.firstname);
           preferences.setString(CommonVar.LAST_NAME_KEY, loginResModel.lastname);
           preferences.setString(CommonVar.USER_MOBILE_KEY, loginResModel.mobile);
-          Navigator.push(context, MaterialPageRoute(
-              builder: (BuildContext context) => Dashboard()));
+          // Navigator.push(context, MaterialPageRoute(
+          //     builder: (BuildContext context) => Dashboard()));
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => Dashboard()),
+                  (Route<dynamic> route) => false);
         }
         else if (result == 'false') {
           CommonMethods.showToast(
@@ -87,46 +89,46 @@ class LoginPageState extends State<LoginPage>{
     }
   }
 
-  _showForgetPassDialog() async {
-    await showDialog<String>(
-      context: context,
-      child: new _SystemPadding(
-        child: new AlertDialog(
-        contentPadding: const EdgeInsets.all(16.0),
-        content: new Row(
-          children: <Widget>[
-            new Expanded(
-              child: new TextField(
-                controller: emailForForgetCtrl,
-                keyboardType: TextInputType.emailAddress,
-                autofocus: true,
-                decoration: new InputDecoration(
-                    labelText: 'Enter your email', hintText: 'eg. abc@gmail.com'),
-              ),
-            )
-          ],
-        ),
-        actions: <Widget>[
-          new FlatButton(
-              child: const Text('CANCEL'),
-              onPressed: () {
-                Navigator.pop(context);
-              }),
-          new FlatButton(
-              child: const Text('Send OTP'),
-              onPressed: () {
-                if(emailForForgetCtrl.text == '' || emailForForgetCtrl.text == null){
-                  CommonMethods.showToast('Please enter yore email');
-                }
-                else{
-                  forgetPassword(emailForForgetCtrl.text);
-                }
-              })
-        ],
-      ),
-      ),
-    );
-  }
+  // _showForgetPassDialog() async {
+  //   await showDialog<String>(
+  //     context: context,
+  //     child: new _SystemPadding(
+  //       child: new AlertDialog(
+  //       contentPadding: const EdgeInsets.all(16.0),
+  //       content: new Row(
+  //         children: <Widget>[
+  //           new Expanded(
+  //             child: new TextField(
+  //               controller: emailForForgetCtrl,
+  //               keyboardType: TextInputType.emailAddress,
+  //               autofocus: true,
+  //               decoration: new InputDecoration(
+  //                   labelText: 'Enter your email', hintText: 'eg. abc@gmail.com'),
+  //             ),
+  //           )
+  //         ],
+  //       ),
+  //       actions: <Widget>[
+  //         new FlatButton(
+  //             child: const Text('CANCEL'),
+  //             onPressed: () {
+  //               Navigator.pop(context);
+  //             }),
+  //         new FlatButton(
+  //             child: const Text('Send OTP'),
+  //             onPressed: () {
+  //               if(emailForForgetCtrl.text == '' || emailForForgetCtrl.text == null){
+  //                 CommonMethods.showToast('Please enter yore email');
+  //               }
+  //               else{
+  //                 forgetPassword(emailForForgetCtrl.text);
+  //               }
+  //             })
+  //       ],
+  //     ),
+  //     ),
+  //   );
+  // }
 
 
 
@@ -237,7 +239,7 @@ class LoginPageState extends State<LoginPage>{
                         child: Center(
                           child: InkWell(
                             onTap: (){
-                              _showForgetPassDialog();
+                              // _showForgetPassDialog();
                             },
                             child: Text(
                                 'Forget Password',
