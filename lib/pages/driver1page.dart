@@ -3,10 +3,13 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:demolight/app_utils/common_var.dart';
+import 'package:demolight/app_utils/global_state.dart';
+import 'package:demolight/pages/camera.dart';
 import 'package:demolight/pages/demo_vehicle.dart';
 import 'package:demolight/pages/scan_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,7 +18,8 @@ import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 class Driver1Page extends StatefulWidget{
   Driver1PageState createState() => Driver1PageState();
 }
-class Driver1PageState extends State<Driver1Page>{
+class Driver1PageState extends State<Driver1Page> with
+    AutomaticKeepAliveClientMixin<Driver1Page>{
   TextEditingController fnameController = new TextEditingController();
   TextEditingController lnameController = new TextEditingController();
   TextEditingController phoneController = new TextEditingController();
@@ -26,62 +30,90 @@ class Driver1PageState extends State<Driver1Page>{
   bool isLicImg;
   bool isInsuImg;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  SharedPreferences preferences;
+
+  @override
+  bool get wantKeepAlive => true;
 
   void _handleClearButtonPressed() {
     signatureGlobalKey.currentState.clear();
   }
 
-  gggg()async{
+  getPref()async{
+    preferences = await SharedPreferences.getInstance();
+  }
+
+  @override
+  initState(){
+    super.initState();
+    getPref();
+    SystemChannels.lifecycle.setMessageHandler((msg){
+      debugPrint('SystemChannels> $msg');
+    });
+  }
+
+  _getLicenceData(BuildContext context) async {
+    // Navigator.push returns a Future that completes after calling
+    // Navigator.pop on the Selection Screen.
+    final result = await Navigator.push(
+      context,
+      // Create the SelectionScreen in the next step.
+      MaterialPageRoute(builder: (context) => ScanPage()),
+    );
+  }
+
+  Map getFullData(){
     String photoBase64Lic = "";
     String photoBase64Insu = "";
     if(licImgFile != null){
       List<int> imageBytes = licImgFile.readAsBytesSync();
       photoBase64Lic = base64Encode(imageBytes);
-      print('photoBase64: '+photoBase64Lic);
+      preferences.setString('lic1_pref', photoBase64Lic);
     }
     if(insuImgFile != null){
       List<int> imageBytes = insuImgFile.readAsBytesSync();
       photoBase64Insu = base64Encode(imageBytes);
-      print('photoBase64: '+photoBase64Insu);
+      preferences.setString('ins1_pref', photoBase64Lic);
     }
-    _saveMySignature().then((signBase64)async{
-      List<String> mData = [];
-      mData.add(fnameController.text==null?'':fnameController.text);
-      mData.add(lnameController.text==null?'':lnameController.text);
-      mData.add(phoneController.text==null?'':phoneController.text);
-      mData.add(emailController.text==null?'':emailController.text);
-      mData.add(photoBase64Lic);
-      mData.add(photoBase64Insu);
-      mData.add(signBase64);
-      SharedPreferences preferences = await SharedPreferences.getInstance();
-      preferences.setString(CommonVar.DRIVER1_FULL_NAME,
-          fnameController.text + ' ' + lnameController.text);
-      Navigator.push(context, MaterialPageRoute(
-          builder: (BuildContext context) => DemoVehicle(mData)));
-      // fnameController.text = '';
-      // lnameController.text = '';
-      // phoneController.text = '';
-      // emailController.text = '';
-      // _handleClearButtonPressed();
-    });
+
+    Map map = {
+      'd1_fname':fnameController.text==null?'':fnameController.text,
+      'd1_lname':lnameController.text==null?'':lnameController.text,
+      'd1_mobile':phoneController.text==null?'':phoneController.text,
+      'd1_email':emailController.text==null?'':emailController.text,
+      'd1_lic_img':photoBase64Lic,
+      'd1_insu_img':photoBase64Insu,
+      'd1_sign':'',
+    };
+    saveDriverName();
+    return map;
   }
 
-  Future<String> _saveMySignature() async {
-    if (true){
-      final data = await signatureGlobalKey.currentState.toImage(pixelRatio: 1.0);
-      ByteData bytes = await data.toByteData(format: ui.ImageByteFormat.png);
-      Uint8List tempImg = await bytes.buffer.asUint8List();
-      if (tempImg != null) {
-        final tempDir = await getTemporaryDirectory();
-        String timeStamp = DateTime.now().millisecondsSinceEpoch.toString();
-        final file = await new File('${tempDir.path}/image.jpg').create();
-        List<int> imageBytes = file.readAsBytesSync();
-        String photoBase64Sign = base64Encode(imageBytes);
-        return photoBase64Sign;
-      }
-      else {
-        return '';
-      }
+  saveDriverName()async{
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.setString(CommonVar.DRIVER1_FULL_NAME, fnameController.text + ' ' + lnameController.text);
+  }
+
+  Future<File> getSignFile() async {
+    final dataTest = await signatureGlobalKey.currentState.toImage(pixelRatio: 1.0);
+    ByteData data = await dataTest.toByteData(format: ui.ImageByteFormat.png);
+    final buffer = data.buffer;
+    Directory tempDir = await getTemporaryDirectory();
+    String tempPath = tempDir.path;
+    var filePath = tempPath + '/file_01.tmp'; // file_01.tmp is dump file, can be anything
+    return new File(filePath).writeAsBytes(
+        buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+  }
+
+  _saveMySignature()async{
+    try {
+      File file = await getSignFile();
+      List<int> imageBytes = file.readAsBytesSync();
+      String photoBase64Sign = base64Encode(imageBytes);
+      preferences.setString('sign1_pref', photoBase64Sign);
+      print('photoBase64Sign'+photoBase64Sign);
+    } catch(e) {
+      // catch errors here
     }
   }
 
@@ -92,48 +124,19 @@ class Driver1PageState extends State<Driver1Page>{
       print("You selected  image : " + mFile.path);
       setState(() {
         if(isLicImg) {
-          debugPrint("SELECTED IMAGE PICK   $mFile");
-          licImgFile = mFile;
+          List<int> imageBytes = mFile.readAsBytesSync();
+          String photoBase64Lic = base64Encode(imageBytes);
+          preferences.setString('lic1_pref', photoBase64Lic);
         }
         else if(isInsuImg){
-          debugPrint("SELECTED IMAGE PICK   $mFile");
-          insuImgFile = mFile;
+          List<int> imageBytes = mFile.readAsBytesSync();
+          String photoBase64Lic = base64Encode(imageBytes);
+          preferences.setString('ins1_pref', photoBase64Lic);
         }
       });
     } else {
       print("You have not taken image");
     }
-  }
-
-  List<String> addDataForSend(){
-    String photoBase64Lic = "";
-    String photoBase64Insu = "";
-    if(licImgFile != null){
-      List<int> imageBytes = licImgFile.readAsBytesSync();
-      photoBase64Lic = base64Encode(imageBytes);
-      print('photoBase64: '+photoBase64Lic);
-    }
-    if(insuImgFile != null){
-      List<int> imageBytes = insuImgFile.readAsBytesSync();
-      photoBase64Insu = base64Encode(imageBytes);
-      print('photoBase64: '+photoBase64Insu);
-    }
-    List<String> mData = [];
-    _saveMySignature().then((signImgStr){
-      mData.add(fnameController.text);
-      mData.add(lnameController.text);
-      mData.add(phoneController.text);
-      mData.add(emailController.text);
-      mData.add(photoBase64Lic);
-      mData.add(photoBase64Insu);
-      mData.add(signImgStr);
-      fnameController.text = '';
-      lnameController.text = '';
-      phoneController.text = '';
-      emailController.text = '';
-      _handleClearButtonPressed();
-    });
-    return mData;
   }
 
   @override
@@ -144,7 +147,7 @@ class Driver1PageState extends State<Driver1Page>{
           body: ListView(
             children: <Widget>[
               Container(
-                height: 50,
+                height: 80,
                 color: Colors.grey[200],
                 child: Center(
                   child: Row(
@@ -152,16 +155,15 @@ class Driver1PageState extends State<Driver1Page>{
                     children: <Widget>[
                       InkWell(
                         onTap: (){
-                          Navigator.push(context,MaterialPageRoute(
-                              builder: (BuildContext context) => ScanPage(0)));
+                          _getLicenceData(context);
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Image.asset(
                                 'assets/images/scan.png',
-                              height: 30.0,
-                              width: 30.0,
+                              height: 60.0,
+                              width: 60.0,
                             ),
                             Text(
                                 'SCAN',
@@ -178,15 +180,15 @@ class Driver1PageState extends State<Driver1Page>{
                           isLicImg = true;
                           isInsuImg = false;
                           imageSelector(context, "camera");
-                          // _settingModalBottomSheet(context);
+
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Image.asset(
                               'assets/images/licence.png',
-                              height: 30.0,
-                              width: 30.0,
+                              height: 60.0,
+                              width: 60.0,
                             ),
                             Text(
                               'LICENSE',
@@ -209,8 +211,8 @@ class Driver1PageState extends State<Driver1Page>{
                           children: <Widget>[
                             Image.asset(
                               'assets/images/insurance.png',
-                              height: 30.0,
-                              width: 30.0,
+                              height: 60.0,
+                              width: 60.0,
                             ),
                             Text(
                               'INSURANCE',
@@ -236,6 +238,9 @@ class Driver1PageState extends State<Driver1Page>{
                       //     return 'Provide first name';
                       //   }
                       // },
+                      onChanged: (context){
+                        preferences.setString('fname1_pref', fnameController.text);
+                      },
                       controller: fnameController,
                       keyboardType: TextInputType.text,
                       decoration: InputDecoration(
@@ -261,6 +266,9 @@ class Driver1PageState extends State<Driver1Page>{
                         //     return 'Provide last name';
                         //   }
                         // },
+                        onChanged: (context){
+                          preferences.setString('lname1_pref', lnameController.text);
+                        },
                         controller: lnameController,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
@@ -287,6 +295,9 @@ class Driver1PageState extends State<Driver1Page>{
                         //     return 'Provide phone number';
                         //   }
                         // },
+                        onChanged: (context){
+                          preferences.setString('phone1_pref', lnameController.text);
+                        },
                         controller: phoneController,
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
@@ -313,6 +324,9 @@ class Driver1PageState extends State<Driver1Page>{
                         //     return 'Provide an email';
                         //   }
                         // },
+                        onChanged: (context){
+                          preferences.setString('email1_pref', lnameController.text);
+                        },
                         controller: emailController,
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
@@ -355,29 +369,16 @@ class Driver1PageState extends State<Driver1Page>{
                                       backgroundColor: Colors.white,
                                       strokeColor: Colors.black,
                                       minimumStrokeWidth: 1.0,
-                                      maximumStrokeWidth: 4.0),
+                                      maximumStrokeWidth: 4.0,
+                                      onSignEnd: (){
+                                        _saveMySignature();
+                                      },
+                                  ),
                                   decoration:
                                   BoxDecoration(border: Border.all(color: Colors.white)))),
                         ],
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
-                      child: InkWell(
-                        onTap: (){
-                          gggg();
-                        },
-                        child: Container(
-                          height: 45.0,
-                          decoration: new BoxDecoration(
-                            color: CommonVar.app_theme_color,
-                            //border: new Border.all(color: Colors.white, width: 2.0),
-                            borderRadius: new BorderRadius.circular(10.0),
-                          ),
-                          child: Center(child: new Text('Vehicle', style: new TextStyle(fontSize: 18.0, color: Colors.white),),),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
