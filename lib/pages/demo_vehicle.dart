@@ -49,8 +49,8 @@ class DemoVehicleState extends State<DemoVehicle>{
     List<String> mPrefData = [];
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String userId = preferences.getString(CommonVar.USERID_KEY);
-    String driver1name = preferences.getString('fname1_pref')+' '+preferences.getString('lname1_pref');
-    String driver2name = preferences.getString('fname2_pref')+' '+preferences.getString('lname2_pref');
+    String driver1name = preferences.getString('fname1_pref')==null?'':preferences.getString('fname1_pref')+' '+preferences.getString('lname1_pref')==null?'':preferences.getString('lname1_pref');
+    String driver2name = preferences.getString('fname2_pref')==null?'':preferences.getString('fname2_pref')+' '+preferences.getString('lname2_pref')==null?'':preferences.getString('lname2_pref');
     mPrefData.add(userId);
     mPrefData.add(driver1name);
     mPrefData.add(driver2name);
@@ -360,15 +360,6 @@ class DemoVehicleState extends State<DemoVehicle>{
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 5.0,top: 20.0),
-                        child: Text(
-                          'Stock #',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w800
-                          ),
-                        ),
-                      ),
                       TextFormField(
                         controller: stockController,
                         keyboardType: TextInputType.number,
