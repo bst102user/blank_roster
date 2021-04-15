@@ -118,7 +118,6 @@ class Driver1PageState extends State<Driver1Page> with
   }
 
   Future imageSelector(BuildContext context, String pickerType) async {
-
     File mFile = await ImagePicker.pickImage(source: ImageSource.camera, imageQuality: 50);
     if (mFile != null) {
       print("You selected  image : " + mFile.path);
@@ -296,7 +295,7 @@ class Driver1PageState extends State<Driver1Page> with
                         //   }
                         // },
                         onChanged: (context){
-                          preferences.setString('phone1_pref', lnameController.text);
+                          preferences.setString('phone1_pref', phoneController.text);
                         },
                         controller: phoneController,
                         keyboardType: TextInputType.phone,
@@ -325,7 +324,7 @@ class Driver1PageState extends State<Driver1Page> with
                         //   }
                         // },
                         onChanged: (context){
-                          preferences.setString('email1_pref', lnameController.text);
+                          preferences.setString('email1_pref', emailController.text);
                         },
                         controller: emailController,
                         keyboardType: TextInputType.emailAddress,

@@ -7,7 +7,7 @@ class AppApis{
   static String DRIVER_INFO_LIST = BASE_URL+'users/driver_list';
   static String FORGET_PASSWORD = BASE_URL+'users/forgot_password';
   static String UPDATE_PASSWORD = BASE_URL+'users/update_password';
-  static String IMAGE_BASE_URL = 'http://bstwebdemo.co.in/client/development/demolight/uploads/';
+  static String IMAGE_BASE_URL = 'https://bstwebdemo.co.in/client/development/demolight/uploads/';
   static String GET_MAKE = 'https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForManufacturerAndYear/mer?year=';
   static String GET_MODEL = 'https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformakeyear/make/';
 

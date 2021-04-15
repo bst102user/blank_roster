@@ -70,19 +70,19 @@ class DemoVehicleState extends State<DemoVehicle>{
         "year": _selectedYearStr==null?'':_selectedYearStr,
         "make": selectMakeStr==null?'':selectMakeStr,
         "model": selectModelStr==null?'':selectModelStr,
-        "firstname": pref.get('fname1_pref'),
-        "lastname": pref.get('lname1_pref'),
-        "phone": pref.get('phone1_pref'),
-        "email": pref.get('email1_pref'),
+        "firstname": pref.get('fname1_pref')==null?'':pref.get('fname1_pref'),
+        "lastname": pref.get('lname1_pref')==null?'':pref.get('lname1_pref'),
+        "phone": pref.get('phone1_pref')==null?'':pref.get('phone1_pref'),
+        "email": pref.get('email1_pref')==null?'':pref.get('email1_pref'),
         "licence_pic": pref.get('lic1_pref'),
         "insurance_pic": pref.get('ins1_pref'),
         "signature": pref.get('sign1_pref')==null?'':pref.get('sign1_pref'),
-        "firstname2": pref.get('fname2_pref'),
-        "lastname2": pref.get('lname2_pref'),
-        "phone2": pref.get('phone2_pref'),
-        "email2": pref.get('email2_pref'),
-        "licence_pic2": pref.get('lic2_pref'),
-        "insurance_pic2": pref.get('ins2_pref'),
+        "firstname2": pref.get('fname2_pref')==null?'':pref.get('fname2_pref'),
+        "lastname2": pref.get('lname2_pref')==null?'':pref.get('lname2_pref'),
+        "phone2": pref.get('phone2_pref')==null?'':pref.get('phone2_pref'),
+        "email2": pref.get('email2_pref')==null?'':pref.get('email2_pref'),
+        "licence_pic2": '',//pref.get('lic2_pref'),
+        "insurance_pic2": '',//pref.get('ins2_pref'),
         "signature2": pref.get('sign2_pref')==null?'':pref.get('sign2_pref'),
       };
       print(mBody.toString());
@@ -360,22 +360,25 @@ class DemoVehicleState extends State<DemoVehicle>{
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextFormField(
-                        controller: stockController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          hintText: 'Enter Stock',
-                          hintStyle: TextStyle(fontSize: 16),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              width: 0,
-                              style: BorderStyle.none,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: TextFormField(
+                          controller: stockController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            hintText: 'Enter Stock',
+                            hintStyle: TextStyle(fontSize: 16),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                width: 0,
+                                style: BorderStyle.none,
+                              ),
                             ),
+                            filled: true,
+                            contentPadding: EdgeInsets.all(10),
+                            // fillColor: colorSearchBg,
                           ),
-                          filled: true,
-                          contentPadding: EdgeInsets.all(10),
-                          // fillColor: colorSearchBg,
                         ),
                       ),
                       Padding(
