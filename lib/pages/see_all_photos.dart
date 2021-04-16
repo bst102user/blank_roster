@@ -34,6 +34,8 @@ class SeeAllPhotosState extends State<SeeAllPhotos>{
                   child: Image.network(
                       widget.allPicks[0],
                     height: 200,
+                    width: 300,
+                      fit:BoxFit.fill
                   ),
                 ),
                 (widget.allPicks[1]=='')?Container():Padding(
@@ -41,6 +43,8 @@ class SeeAllPhotosState extends State<SeeAllPhotos>{
                   child: Image.network(
                     widget.allPicks[1],
                     height: 200,
+                      width: 300,
+                      fit:BoxFit.fill
                   ),
                 ),
                 (widget.allPicks[2]=='')?Container():Padding(

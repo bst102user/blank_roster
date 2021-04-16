@@ -197,6 +197,7 @@ class DemoHistoryState extends State<DemoHistory> {
                                                       AppApis.IMAGE_BASE_URL+_searchResult[i].licencePic,
                                                     width: deviceWidth*0.4,
                                                     height: deviceWidth*0.15,
+                                                      fit:BoxFit.fill
                                                   ):
                                                   Icon(Icons.not_interested,
                                                     color: Colors.grey,
@@ -298,6 +299,7 @@ class DemoHistoryState extends State<DemoHistory> {
                                                     AppApis.IMAGE_BASE_URL+sDriver[i].licencePic,
                                                     width: deviceWidth*0.3,
                                                     height: deviceWidth*0.2,
+                                                      fit:BoxFit.fill
                                                   ):Icon(
                                                       Icons.not_interested,
                                                     color: Colors.grey,

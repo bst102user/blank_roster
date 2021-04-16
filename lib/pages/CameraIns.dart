@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:demolight/app_utils/common_methods.dart';
 import 'package:demolight/app_utils/common_var.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 
 class CameraIns extends StatefulWidget {
   final String lastPage;
@@ -22,40 +24,50 @@ class CameraScreenState extends State<CameraIns> {
     super.initState();
   }
 
-  //********************** IMAGE PICKER
-  Future imageSelector(BuildContext context, String pickerType) async {
-    switch (pickerType) {
-      case "gallery":
+  Future<File> testCompressAndGetFile(File file, String targetPath) async {
+    var result = await FlutterImageCompress.compressAndGetFile(
+        file.absolute.path, targetPath,
+        quality: 60,
+        rotate: 0,
+        minWidth: 512,
+        minHeight: 250
+    );
 
-      /// GALLERY IMAGE PICKER
-        imageFile = await ImagePicker.pickImage(
-            source: ImageSource.gallery, imageQuality: 90);
-        break;
+    print(file.lengthSync());
+    print(result.lengthSync());
 
-      case "camera": // CAMERA CAPTURE CODE
-        imageFile = await ImagePicker.pickImage(source: ImageSource.camera, imageQuality: 50);
-        List<int> imageBytes = imageFile.readAsBytesSync();
-        String photoBase64Lic = base64Encode(imageBytes);
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        if(widget.lastPage == 'driver1') {
-          preferences.setString('ins1_pref', photoBase64Lic);
-        }
-        else{
-          preferences.setString('ins2_pref', photoBase64Lic);
-        }
-        print(photoBase64Lic);
-        break;
-    }
-
-    if (imageFile != null) {
-      print("You selected  image : " + imageFile.path);
-      setState(() {
-        debugPrint("SELECTED IMAGE PICK   $imageFile");
-      });
-    } else {
-      print("You have not taken image");
-    }
+    return result;
   }
+
+  Future imageSelector(BuildContext context, String pickerType) async {
+    File imageFilel = await ImagePicker.pickImage(source: ImageSource.camera, imageQuality: 50);
+    final dir = await path_provider.getTemporaryDirectory();
+    String mTime = DateTime.now().millisecondsSinceEpoch.toString();
+    final targetPath = dir.absolute.path + "/$mTime.jpg";
+    testCompressAndGetFile(imageFilel, targetPath).then((value)async{
+      imageFile = value;
+      List<int> imageBytes = imageFile.readAsBytesSync();
+      String photoBase64Lic = base64Encode(imageBytes);
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      if(widget.lastPage == 'driver1') {
+        preferences.setString('ins1_pref', photoBase64Lic);
+      }
+      else{
+        preferences.setString('ins2_pref', photoBase64Lic);
+      }
+      print(photoBase64Lic);
+      if (imageFile != null) {
+        print("You selected  image : " + imageFile.path);
+        setState(() {
+          debugPrint("SELECTED IMAGE PICK   $imageFile");
+        });
+      } else {
+        print("You have not taken image");
+      }
+    });
+  }
+
+  //********************** IMAGE PICKER
 
   @override
   Widget build(BuildContext context) {
