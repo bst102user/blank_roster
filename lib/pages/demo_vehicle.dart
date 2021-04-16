@@ -8,6 +8,7 @@ import 'package:demolight/models/model_model.dart';
 import 'package:demolight/pages/dahsboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -284,9 +285,25 @@ class DemoVehicleState extends State<DemoVehicle>{
                   padding: const EdgeInsets.only(top: 10.0),
                   child: InkWell(
                     onTap: (){
-                      isStartDate = true;
-                      isEndDate = false;
-                      _showDatePicker(context);
+                      DateTime now = new DateTime.now();
+                      var _chosenDateTime = new DateTime(now.year, now.month, now.day, now.hour, now.minute);
+                      DatePicker.showDateTimePicker(context, showTitleActions: true, onChanged: (date) {
+                        print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
+                      }, onConfirm: (date) {
+                        print('confirm $date');
+                        setState(() {
+                          _chosenDateTime1 = date;
+                          String parseDate = new DateFormat("MMM dd, yyyy hh:mm a").format(_chosenDateTime1);
+                          startDateStr = parseDate;
+                          startDateStrForServer = new DateFormat("yyyy-MM-dd").format(_chosenDateTime1);
+
+                          startSelectedDateTime = new DateFormat("MMM dd, yyyy hh:mm a").parse(startDateStr);
+                          _chosenDateTime = new DateTime(startSelectedDateTime.year, startSelectedDateTime.month, startSelectedDateTime.day, startSelectedDateTime.hour, startSelectedDateTime.minute+15);
+                          String parseDateEndDate = new DateFormat("MMM dd, yyyy hh:mm a").format(_chosenDateTime);
+                          endDateStrForServer = new DateFormat("yyyy-MM-dd").format(_chosenDateTime);
+                          endDateStr = parseDateEndDate;
+                        });
+                      }, currentTime: _chosenDateTime);
                     },
                     child: Container(
                       height: 40.0,
@@ -322,9 +339,29 @@ class DemoVehicleState extends State<DemoVehicle>{
                   padding: const EdgeInsets.only(top: 10.0),
                   child: InkWell(
                     onTap: (){
-                      isStartDate = false;
-                      isEndDate = true;
-                      _showDatePicker(context);
+                      // isStartDate = false;
+                      // isEndDate = true;
+                      // _showDatePicker(context);
+                      DateTime now = new DateTime.now();
+                      DateTime _chosenDateTime = new DateTime(now.year, now.month, now.day, now.hour, now.minute);
+                      DatePicker.showDateTimePicker(context, showTitleActions: true, onChanged: (date) {
+                        print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
+                      }, onConfirm: (date) {
+                        print('confirm $date');
+                        _chosenDateTime2 = date;
+                        int diff = _chosenDateTime2.difference(_chosenDateTime1).inMinutes;
+                        if(diff>15){
+                          setState(() {
+                            _chosenDateTime2 = date;
+                            String parseDate = new DateFormat("MMM dd, yyyy hh:mm a").format(_chosenDateTime2);
+                            endDateStr = parseDate;
+                            endDateStrForServer = new DateFormat("yyyy-MM-dd").format(_chosenDateTime2);
+                          });
+                        }
+                        else{
+                          CommonMethods.showAlertDialogWithSingleButton(context, 'End date should b greater then 15 minutes from start date');
+                        }
+                      }, currentTime: _chosenDateTime);
                     },
                     child: Container(
                       height: 40.0,
@@ -618,12 +655,16 @@ class DemoVehicleState extends State<DemoVehicle>{
                       child: Center(child: new Text('Submit', style: new TextStyle(fontSize: 18.0, color: Colors.white),),),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
         )
     );
   }
-
+  DateTime _chosenDateTime1;
+  DateTime _chosenDateTime2;
+/*
+* DateTime endSelectedDateTime = new DateFormat("MMM dd, yyyy hh:mm a").parse(endDateStr);
+                          int diff = endSelectedDateTime.difference(startSelectedDateTime).inMinutes;*/
 }
