@@ -74,7 +74,7 @@ class ProfilePageState extends State<ProfilePage>{
     var mBody = {
       "id": userId,
       "username": usernameTec.text,
-      "storename": storeTec.text,
+      "sortname": storeTec.text,
       "firstname": fnameTec.text,
       "lastname": lnameTec.text,
       "mobile": mobileTec.text,
