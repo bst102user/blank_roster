@@ -15,7 +15,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart' show rootServices;
 
 class Camera extends StatefulWidget {
-  const Camera({Key key}) : super(key: key);
+  final String lastPage;
+  Camera(this.lastPage);
 
   @override
   CameraScreenState createState() => CameraScreenState();
@@ -44,7 +45,12 @@ class CameraScreenState extends State<Camera> {
         List<int> imageBytes = imageFile.readAsBytesSync();
         String photoBase64Lic = base64Encode(imageBytes);
         SharedPreferences preferences = await SharedPreferences.getInstance();
-        preferences.setString('lic1_pref', photoBase64Lic);
+        if(widget.lastPage == 'driver1') {
+          preferences.setString('lic1_pref', photoBase64Lic);
+        }
+        else{
+          preferences.setString('lic2_pref', photoBase64Lic);
+        }
         print(photoBase64Lic);
         break;
     }
@@ -99,8 +105,8 @@ class CameraScreenState extends State<Camera> {
                 ),
                 InkWell(
                   onTap: (){
-                    Navigator.push(context, MaterialPageRoute(
-                        builder: (BuildContext context) => CameraIns()));
+                    Navigator.pushReplacement(context, MaterialPageRoute(
+                        builder: (BuildContext context) => CameraIns(widget.lastPage)));
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),

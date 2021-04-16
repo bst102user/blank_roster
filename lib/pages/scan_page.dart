@@ -8,6 +8,8 @@ import 'dart:io';
 import 'camera.dart';
 
 class ScanPage extends StatefulWidget{
+  final String lastPage;
+  ScanPage(this.lastPage);
   ScanPageState createState() => ScanPageState();
 }
 
@@ -90,8 +92,8 @@ class ScanPageState extends State<ScanPage>{
                       ),
                       InkWell(
                         onTap: (){
-                          Navigator.push(context, MaterialPageRoute(
-                              builder: (BuildContext context) => Camera()));
+                          Navigator.pushReplacement(context, MaterialPageRoute(
+                              builder: (BuildContext context) => Camera(widget.lastPage)));
                         },
                         child: Text(
                           'NEXT',

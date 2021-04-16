@@ -15,6 +15,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 
+import 'CameraIns.dart';
+
 class Driver1Page extends StatefulWidget{
   Driver1PageState createState() => Driver1PageState();
 }
@@ -52,15 +54,6 @@ class Driver1PageState extends State<Driver1Page> with
     });
   }
 
-  _getLicenceData(BuildContext context) async {
-    // Navigator.push returns a Future that completes after calling
-    // Navigator.pop on the Selection Screen.
-    final result = await Navigator.push(
-      context,
-      // Create the SelectionScreen in the next step.
-      MaterialPageRoute(builder: (context) => ScanPage()),
-    );
-  }
 
   Map getFullData(){
     String photoBase64Lic = "";
@@ -154,7 +147,8 @@ class Driver1PageState extends State<Driver1Page> with
                     children: <Widget>[
                       InkWell(
                         onTap: (){
-                          _getLicenceData(context);
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (BuildContext context) => ScanPage('driver1')));
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -178,8 +172,10 @@ class Driver1PageState extends State<Driver1Page> with
                         onTap: (){
                           isLicImg = true;
                           isInsuImg = false;
-                          imageSelector(context, "camera");
-
+                          // imageSelector(context, "camera");
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (BuildContext context) => Camera('driver1')));
+                          // Navigator.pushReplacement(BuildContext context, Route<T> newRoute);
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -201,9 +197,10 @@ class Driver1PageState extends State<Driver1Page> with
                       ),
                       InkWell(
                         onTap: (){
-                          isLicImg = false;
-                          isInsuImg = true;
-                          imageSelector(context, "camera");
+                          // isLicImg = 1;
+                          // isInsuImg = true;
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (BuildContext context) => CameraIns('driver1')));
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

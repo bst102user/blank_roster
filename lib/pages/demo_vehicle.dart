@@ -49,11 +49,13 @@ class DemoVehicleState extends State<DemoVehicle>{
     List<String> mPrefData = [];
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String userId = preferences.getString(CommonVar.USERID_KEY);
-    String driver1name = preferences.getString('fname1_pref')==null?'':preferences.getString('fname1_pref')+' '+preferences.getString('lname1_pref')==null?'':preferences.getString('lname1_pref');
-    String driver2name = preferences.getString('fname2_pref')==null?'':preferences.getString('fname2_pref')+' '+preferences.getString('lname2_pref')==null?'':preferences.getString('lname2_pref');
+    String driver1fname = preferences.getString('fname1_pref')==null?'':preferences.getString('fname1_pref');
+    String driver1lname = preferences.getString('lname1_pref')==null?'':preferences.getString('lname1_pref');
+    String driver2fname = preferences.getString('fname2_pref')==null?'':preferences.getString('fname2_pref');
+    String driver2lname = preferences.getString('lname2_pref')==null?'':preferences.getString('lname2_pref');
     mPrefData.add(userId);
-    mPrefData.add(driver1name);
-    mPrefData.add(driver2name);
+    mPrefData.add(driver1fname+' '+driver1lname);
+    mPrefData.add(driver2fname+' '+driver2lname);
     return mPrefData;
   }
 

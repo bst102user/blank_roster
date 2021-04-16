@@ -12,6 +12,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 
+import 'CameraIns.dart';
+import 'camera.dart';
+
 class Driver2Page extends StatefulWidget{
   Driver2PageState createState() => Driver2PageState();
   Driver2PageState dps = new Driver2PageState();
@@ -141,7 +144,7 @@ class Driver2PageState extends State<Driver2Page> with
                     InkWell(
                       onTap: (){
                         Navigator.push(context,MaterialPageRoute(
-                            builder: (BuildContext context) => ScanPage()));
+                            builder: (BuildContext context) => ScanPage('driver2')));
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -163,9 +166,8 @@ class Driver2PageState extends State<Driver2Page> with
                     ),
                     InkWell(
                       onTap: (){
-                        isLicImg = true;
-                        isInsuImg = false;
-                        imageSelector(context, "camera");
+                        Navigator.push(context, MaterialPageRoute(
+                            builder: (BuildContext context) => Camera('driver2')));
                         // _settingModalBottomSheet(context);
                       },
                       child: Column(
@@ -188,9 +190,8 @@ class Driver2PageState extends State<Driver2Page> with
                     ),
                     InkWell(
                       onTap: (){
-                        isLicImg = false;
-                        isInsuImg = true;
-                        imageSelector(context, "camera");
+                        Navigator.push(context, MaterialPageRoute(
+                            builder: (BuildContext context) => CameraIns('driver2')));
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -245,7 +246,7 @@ class Driver2PageState extends State<Driver2Page> with
                       padding: const EdgeInsets.only(top:10.0),
                       child: TextFormField(
                         onChanged: (context){
-                          preferences.setString('lname2_pref', fnameController.text);
+                          preferences.setString('lname2_pref', lnameController.text);
                         },
                         controller: lnameController,
                         keyboardType: TextInputType.text,
@@ -269,7 +270,7 @@ class Driver2PageState extends State<Driver2Page> with
                       padding: const EdgeInsets.only(top:10.0),
                       child: TextFormField(
                         onChanged: (context){
-                          preferences.setString('phone2_pref', fnameController.text);
+                          preferences.setString('phone2_pref', phoneController.text);
                         },
                         controller: phoneController,
                         keyboardType: TextInputType.phone,
@@ -293,7 +294,7 @@ class Driver2PageState extends State<Driver2Page> with
                       padding: const EdgeInsets.only(top:10.0),
                       child: TextFormField(
                         onChanged: (context){
-                          preferences.setString('email2_pref', fnameController.text);
+                          preferences.setString('email2_pref', emailController.text);
                         },
                         controller: emailController,
                         keyboardType: TextInputType.emailAddress,

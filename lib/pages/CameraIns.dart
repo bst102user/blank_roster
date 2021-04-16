@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:demolight/app_utils/common_methods.dart';
 import 'package:demolight/app_utils/common_var.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CameraIns extends StatefulWidget {
-  const CameraIns({Key key}) : super(key: key);
+  final String lastPage;
+  CameraIns(this.lastPage);
 
   @override
   CameraScreenState createState() => CameraScreenState();
@@ -35,7 +37,12 @@ class CameraScreenState extends State<CameraIns> {
         List<int> imageBytes = imageFile.readAsBytesSync();
         String photoBase64Lic = base64Encode(imageBytes);
         SharedPreferences preferences = await SharedPreferences.getInstance();
-        preferences.setString('ins1_pref', photoBase64Lic);
+        if(widget.lastPage == 'driver1') {
+          preferences.setString('ins1_pref', photoBase64Lic);
+        }
+        else{
+          preferences.setString('ins2_pref', photoBase64Lic);
+        }
         print(photoBase64Lic);
         break;
     }
@@ -92,8 +99,6 @@ class CameraScreenState extends State<CameraIns> {
                 ),
                 InkWell(
                   onTap: (){
-                    Navigator.pop(context);
-                    Navigator.pop(context);
                     Navigator.pop(context);
                   },
                   child: Padding(
