@@ -145,7 +145,12 @@ class DemoHistoryState extends State<DemoHistory> {
                       );
                     }
                     else{
-                      List<DriverListResponseTrue> sDriver = snapshot.data;
+                      List<DriverListResponseTrue> sDriver = [];
+                      List<DriverListResponseTrue> comingList = snapshot.data;
+                      for(int x=comingList.length-1;x>0;x--){
+                        sDriver.add(comingList[x]);
+                      }
+                      // List<DriverListResponseTrue> sDriver = snapshot.data;
                       return Expanded(
                         flex: 9,
                         child:  _searchResult.length != 0 || searchController.text.isNotEmpty
@@ -184,19 +189,30 @@ class DemoHistoryState extends State<DemoHistory> {
                                                   }
                                                   else{
                                                     List<String> allImages = [];
-                                                    allImages.add(AppApis.IMAGE_BASE_URL+_searchResult[i].licencePic);
-                                                    allImages.add(AppApis.IMAGE_BASE_URL+_searchResult[i].insurancePic);
-                                                    allImages.add(AppApis.IMAGE_BASE_URL+_searchResult[i].signature);
+                                                    allImages.add(_searchResult[i].licencePic);
+                                                    allImages.add(_searchResult[i].insurancePic);
+                                                    allImages.add(_searchResult[i].signature);
                                                     Navigator.push(context, MaterialPageRoute(
                                                         builder: (BuildContext context) => SeeAllPhotos(allImages)));
                                                   }
                                                 },
                                                 child: _searchResult[i].licencePic != ''?
-                                                Image.network(
-                                                    AppApis.IMAGE_BASE_URL+_searchResult[i].licencePic,
-                                                    width: deviceWidth*0.4,
-                                                    height: deviceWidth*0.15,
-                                                    fit:BoxFit.fill
+                                                // Image.network(
+                                                //     AppApis.IMAGE_BASE_URL+_searchResult[i].licencePic,
+                                                //     width: deviceWidth*0.4,
+                                                //     height: deviceWidth*0.15,
+                                                //     fit:BoxFit.fill
+                                                // ):
+                                                Container(
+                                                  width: deviceWidth*0.3,
+                                                  height: deviceWidth*0.2,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.black,
+                                                    image: DecorationImage(
+                                                      fit: BoxFit.fitHeight,
+                                                      image: NetworkImage(AppApis.IMAGE_BASE_URL+_searchResult[i].licencePic),
+                                                    ),
+                                                  ),
                                                 ):
                                                 Icon(Icons.not_interested,
                                                   color: Colors.grey,
@@ -286,20 +302,33 @@ class DemoHistoryState extends State<DemoHistory> {
                                                   }
                                                   else{
                                                     List<String> allImages = [];
-                                                    allImages.add(AppApis.IMAGE_BASE_URL+sDriver[i].licencePic);
-                                                    allImages.add(AppApis.IMAGE_BASE_URL+sDriver[i].insurancePic);
-                                                    allImages.add(AppApis.IMAGE_BASE_URL+sDriver[i].signature);
+                                                    allImages.add(sDriver[i].licencePic);
+                                                    allImages.add(sDriver[i].insurancePic);
+                                                    allImages.add(sDriver[i].signature);
                                                     Navigator.push(context, MaterialPageRoute(
                                                         builder: (BuildContext context) => SeeAllPhotos(allImages)));
 
                                                   }
                                                 },
-                                                child: sDriver[i].licencePic != ''?Image.network(
-                                                    AppApis.IMAGE_BASE_URL+sDriver[i].licencePic,
-                                                    width: deviceWidth*0.3,
-                                                    height: deviceWidth*0.2,
-                                                    fit:BoxFit.fill
-                                                ):Icon(
+                                                child: sDriver[i].licencePic != ''?
+                                                // Image.network(
+                                                //     AppApis.IMAGE_BASE_URL+sDriver[i].licencePic,
+                                                //     width: deviceWidth*0.3,
+                                                //     height: deviceWidth*0.2,
+                                                //     fit:BoxFit.fill
+                                                // )
+                                                Container(
+                                                  width: deviceWidth*0.3,
+                                                  height: deviceWidth*0.2,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.black,
+                                                    image: DecorationImage(
+                                                      fit: BoxFit.fitHeight,
+                                                      image: NetworkImage(AppApis.IMAGE_BASE_URL+sDriver[i].licencePic,),
+                                                    ),
+                                                  ),
+                                                )
+                                                    :Icon(
                                                   Icons.not_interested,
                                                   color: Colors.grey,
                                                   size: 100,
