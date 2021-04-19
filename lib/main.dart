@@ -1,21 +1,25 @@
 import 'dart:async';
+import 'package:camera/camera.dart';
 import 'package:demolight/app_utils/common_var.dart';
 import 'package:demolight/pages/dahsboard.dart';
 import 'package:demolight/pages/demo_vehicle.dart';
 import 'package:demolight/pages/login_page.dart';
+import 'package:demolight/pages/test.dart';
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+List<CameraDescription> cameras;
 void main() {
+
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
     [
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ],
-  ).then((val) {
+  ).then((val)async {
+    cameras = await availableCameras();
     runApp(new MyApp());
   });
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -34,6 +38,7 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: MyHomePage(),
+      // home: CameraHomeScreen(cameras),
     );
   }
 }

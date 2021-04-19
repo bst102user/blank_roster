@@ -89,46 +89,48 @@ class LoginPageState extends State<LoginPage>{
     }
   }
 
-  // _showForgetPassDialog() async {
-  //   await showDialog<String>(
-  //     context: context,
-  //     child: new _SystemPadding(
-  //       child: new AlertDialog(
-  //       contentPadding: const EdgeInsets.all(16.0),
-  //       content: new Row(
-  //         children: <Widget>[
-  //           new Expanded(
-  //             child: new TextField(
-  //               controller: emailForForgetCtrl,
-  //               keyboardType: TextInputType.emailAddress,
-  //               autofocus: true,
-  //               decoration: new InputDecoration(
-  //                   labelText: 'Enter your email', hintText: 'eg. abc@gmail.com'),
-  //             ),
-  //           )
-  //         ],
-  //       ),
-  //       actions: <Widget>[
-  //         new FlatButton(
-  //             child: const Text('CANCEL'),
-  //             onPressed: () {
-  //               Navigator.pop(context);
-  //             }),
-  //         new FlatButton(
-  //             child: const Text('Send OTP'),
-  //             onPressed: () {
-  //               if(emailForForgetCtrl.text == '' || emailForForgetCtrl.text == null){
-  //                 CommonMethods.showToast('Please enter yore email');
-  //               }
-  //               else{
-  //                 forgetPassword(emailForForgetCtrl.text);
-  //               }
-  //             })
-  //       ],
-  //     ),
-  //     ),
-  //   );
-  // }
+  _showForgetPassDialog() async {
+    await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+          return _SystemPadding(
+            child: new AlertDialog(
+              contentPadding: const EdgeInsets.all(16.0),
+              content: new Row(
+                children: <Widget>[
+                  new Expanded(
+                    child: new TextField(
+                      controller: emailForForgetCtrl,
+                      keyboardType: TextInputType.emailAddress,
+                      autofocus: true,
+                      decoration: new InputDecoration(
+                          labelText: 'Enter your email', hintText: 'eg. abc@gmail.com'),
+                    ),
+                  )
+                ],
+              ),
+              actions: <Widget>[
+                new FlatButton(
+                    child: const Text('CANCEL'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    }),
+                new FlatButton(
+                    child: const Text('Send OTP'),
+                    onPressed: () {
+                      if(emailForForgetCtrl.text == '' || emailForForgetCtrl.text == null){
+                        CommonMethods.showToast('Please enter yore email');
+                      }
+                      else{
+                        forgetPassword(emailForForgetCtrl.text);
+                      }
+                    })
+              ],
+            ),
+          );
+      },
+    );
+  }
 
 
 
@@ -239,7 +241,7 @@ class LoginPageState extends State<LoginPage>{
                         child: Center(
                           child: InkWell(
                             onTap: (){
-                              // _showForgetPassDialog();
+                              _showForgetPassDialog();
                             },
                             child: Text(
                                 'Forget Password',

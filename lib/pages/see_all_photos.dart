@@ -33,8 +33,8 @@ class SeeAllPhotosState extends State<SeeAllPhotos>{
                   padding: const EdgeInsets.all(8.0),
                   child: Image.network(
                       widget.allPicks[0],
-                    height: 200,
-                    width: 300,
+                    height: 250,
+                    width: 250,
                       fit:BoxFit.fill
                   ),
                 ),
@@ -42,8 +42,8 @@ class SeeAllPhotosState extends State<SeeAllPhotos>{
                   padding: const EdgeInsets.all(8.0),
                   child: Image.network(
                     widget.allPicks[1],
-                    height: 200,
-                      width: 300,
+                    height: 250,
+                      width: 250,
                       fit:BoxFit.fill
                   ),
                 ),

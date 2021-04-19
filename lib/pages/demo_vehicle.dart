@@ -405,7 +405,7 @@ class DemoVehicleState extends State<DemoVehicle>{
                           controller: stockController,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                            hintText: 'Enter Stock',
+                            hintText: 'Stock #',
                             hintStyle: TextStyle(fontSize: 16),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),

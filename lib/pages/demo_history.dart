@@ -221,7 +221,7 @@ class DemoHistoryState extends State<DemoHistory> {
                                                         ),
                                                       ),
                                                       Text(
-                                                        'YEAR #'+_searchResult[i].year,
+                                                        'Year #'+_searchResult[i].year,
                                                         style: TextStyle(
                                                           color: Colors.black,
                                                         ),
@@ -324,7 +324,7 @@ class DemoHistoryState extends State<DemoHistory> {
                                                         ),
                                                       ),
                                                       Text(
-                                                        'YEAR #'+sDriver[i].year,
+                                                        'Year #'+sDriver[i].year,
                                                         style: TextStyle(
                                                           color: Colors.black,
                                                         ),
