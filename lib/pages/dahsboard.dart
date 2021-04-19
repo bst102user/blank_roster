@@ -65,77 +65,75 @@ class DashboardPage extends State<Dashboard>{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return SafeArea(
-      child: Scaffold(
-        appBar: navIndex == 2?null:AppBar(
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.logout,
-                color: CommonVar.app_theme_color,
-              ),
-              onPressed: () {
-                showLogoutDialog();
-              },
-            )
-          ],
-          title: Center(child: Text(
-              mAppBar,
+    return Scaffold(
+      appBar: navIndex == 2?null:AppBar(
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.logout,
+              color: CommonVar.app_theme_color,
+            ),
+            onPressed: () {
+              showLogoutDialog();
+            },
+          )
+        ],
+        title: Center(child: Text(
+          mAppBar,
           style: TextStyle(
-            color: CommonVar.app_theme_color
+              color: CommonVar.app_theme_color
           ),)),
-          backgroundColor: Colors.white,
-        ),
-        body: currentWidget,
-        bottomNavigationBar: new BottomNavigationBar(
-          currentIndex: navIndex,
-          onTap: (int index) {
-            setState((){
-              this.navIndex = index;
-              mAppBar = 'History';
-              if(navIndex == 0){
-                currentWidget = new DemoHistory();
-              }
-              else if(navIndex == 1){
-                currentWidget = new DriverInfo();
-                mAppBar = 'Driver Info';
-              }
-              else if(navIndex == 2){
-                currentWidget = new ProfilePage();
-                mAppBar = 'Profile';
-              }
-            });
-          },
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Image.asset(
-                  'assets/images/history_icn.png',
-                height: 30.0,
-                width: 30.0,
-                color: navIndex == 0?CommonVar.app_theme_color:Colors.grey,
-              ),
-              title: new Text("History"),
+        backgroundColor: Colors.white,
+      ),
+      body: currentWidget,
+      bottomNavigationBar: new BottomNavigationBar(
+        currentIndex: navIndex,
+        onTap: (int index) {
+          setState((){
+            this.navIndex = index;
+            mAppBar = 'History';
+            if(navIndex == 0){
+              currentWidget = new DemoHistory();
+            }
+            else if(navIndex == 1){
+              currentWidget = new DriverInfo();
+              mAppBar = 'Driver Info';
+            }
+            else if(navIndex == 2){
+              currentWidget = new ProfilePage();
+              mAppBar = 'Profile';
+            }
+          });
+        },
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Image.asset(
+              'assets/images/history_icn.png',
+              height: 30.0,
+              width: 30.0,
+              color: navIndex == 0?CommonVar.app_theme_color:Colors.grey,
             ),
-            BottomNavigationBarItem(
-              icon: Image.asset(
-                'assets/images/new_demo_icn.png',
-                height: 30.0,
-                width: 30.0,
-                color: navIndex == 1?CommonVar.app_theme_color:Colors.grey,
-              ),
-              title: new Text("New Demo"),
+            title: new Text("History"),
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset(
+              'assets/images/new_demo_icn.png',
+              height: 30.0,
+              width: 30.0,
+              color: navIndex == 1?CommonVar.app_theme_color:Colors.grey,
             ),
-            BottomNavigationBarItem(
-              icon: Image.asset(
-                'assets/images/profile_icn.png',
-                height: 30.0,
-                width: 30.0,
-                color: navIndex == 2?CommonVar.app_theme_color:Colors.grey,
-              ),
-              title: new Text("Profile"),
+            title: new Text("New Demo"),
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset(
+              'assets/images/profile_icn.png',
+              height: 30.0,
+              width: 30.0,
+              color: navIndex == 2?CommonVar.app_theme_color:Colors.grey,
             ),
-          ],
-        ),
+            title: new Text("Profile"),
+          ),
+        ],
       ),
     );
   }

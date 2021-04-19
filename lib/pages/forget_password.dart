@@ -57,136 +57,134 @@ class ForgetPasswordState extends State<ForgetPassword>{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          iconTheme: IconThemeData(
-            color: CommonVar.app_theme_color, //change your color here
-          ),
-          title:  Text(
-            'Forget Password',
-            style: TextStyle(
-                color: CommonVar.app_theme_color
-            ),),
-          backgroundColor: Colors.white,
+    return Scaffold(
+      appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: CommonVar.app_theme_color, //change your color here
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Form(
-                key: _formKey,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 5.0,top: 50.0),
-                        child: Text('OTP'),
+        title:  Text(
+          'Forget Password',
+          style: TextStyle(
+              color: CommonVar.app_theme_color
+          ),),
+        backgroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5.0,top: 50.0),
+                      child: Text('OTP'),
+                    ),
+                    TextFormField(
+                      validator: (input) {
+                        if(input.isEmpty){
+                          return 'Provide an OTP';
+                        }
+                      },
+                      controller: otpCtrl,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: 'Enter OTP',
+                        hintStyle: TextStyle(fontSize: 16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            width: 0,
+                            style: BorderStyle.none,
+                          ),
+                        ),
+                        filled: true,
+                        contentPadding: EdgeInsets.all(10),
+                        // fillColor: colorSearchBg,
                       ),
-                      TextFormField(
-                        validator: (input) {
-                          if(input.isEmpty){
-                            return 'Provide an OTP';
-                          }
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5.0,top: 10.0),
+                      child: Text('Password'),
+                    ),
+                    TextFormField(
+                      obscureText: true,
+                      validator: (input) {
+                        if(input.isEmpty){
+                          return 'Provide an password';
+                        }
+                      },
+                      controller: passwordCtrl,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        hintText: 'Password',
+                        hintStyle: TextStyle(fontSize: 16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            width: 0,
+                            style: BorderStyle.none,
+                          ),
+                        ),
+                        filled: true,
+                        contentPadding: EdgeInsets.all(10),
+                        // fillColor: colorSearchBg,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5.0,top: 10.0),
+                      child: Text('Confirm Password'),
+                    ),
+                    TextFormField(
+                      validator: (input) {
+                        if(input.isEmpty){
+                          return 'Provide Confirm Password';
+                        }
+                      },
+                      controller: conPassCtrl,
+                      keyboardType: TextInputType.text,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        hintText: 'Confirm Password',
+                        hintStyle: TextStyle(fontSize: 16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            width: 0,
+                            style: BorderStyle.none,
+                          ),
+                        ),
+                        filled: true,
+                        contentPadding: EdgeInsets.all(10),
+                        // fillColor: colorSearchBg,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15.0),
+                      child: InkWell(
+                        onTap: (){
+                          updatePassword();
                         },
-                        controller: otpCtrl,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          hintText: 'Enter OTP',
-                          hintStyle: TextStyle(fontSize: 16),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              width: 0,
-                              style: BorderStyle.none,
-                            ),
+                        child: Container(
+                          height: 45.0,
+                          decoration: new BoxDecoration(
+                            color: CommonVar.app_theme_color,
+                            //border: new Border.all(color: Colors.white, width: 2.0),
+                            borderRadius: new BorderRadius.circular(10.0),
                           ),
-                          filled: true,
-                          contentPadding: EdgeInsets.all(10),
-                          // fillColor: colorSearchBg,
+                          child: Center(child: new Text('Update Password', style: new TextStyle(fontSize: 18.0, color: Colors.white),),),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 5.0,top: 10.0),
-                        child: Text('Password'),
-                      ),
-                      TextFormField(
-                        obscureText: true,
-                        validator: (input) {
-                          if(input.isEmpty){
-                            return 'Provide an password';
-                          }
-                        },
-                        controller: passwordCtrl,
-                        keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          hintText: 'Password',
-                          hintStyle: TextStyle(fontSize: 16),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              width: 0,
-                              style: BorderStyle.none,
-                            ),
-                          ),
-                          filled: true,
-                          contentPadding: EdgeInsets.all(10),
-                          // fillColor: colorSearchBg,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 5.0,top: 10.0),
-                        child: Text('Confirm Password'),
-                      ),
-                      TextFormField(
-                        validator: (input) {
-                          if(input.isEmpty){
-                            return 'Provide Confirm Password';
-                          }
-                        },
-                        controller: conPassCtrl,
-                        keyboardType: TextInputType.text,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          hintText: 'Confirm Password',
-                          hintStyle: TextStyle(fontSize: 16),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              width: 0,
-                              style: BorderStyle.none,
-                            ),
-                          ),
-                          filled: true,
-                          contentPadding: EdgeInsets.all(10),
-                          // fillColor: colorSearchBg,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 15.0),
-                        child: InkWell(
-                          onTap: (){
-                            updatePassword();
-                          },
-                          child: Container(
-                            height: 45.0,
-                            decoration: new BoxDecoration(
-                              color: CommonVar.app_theme_color,
-                              //border: new Border.all(color: Colors.white, width: 2.0),
-                              borderRadius: new BorderRadius.circular(10.0),
-                            ),
-                            child: Center(child: new Text('Update Password', style: new TextStyle(fontSize: 18.0, color: Colors.white),),),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

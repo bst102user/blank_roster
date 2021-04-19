@@ -130,105 +130,127 @@ class Driver2PageState extends State<Driver2Page> with
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return SafeArea(
-      child: Scaffold(
-        body: ListView(
-          children: <Widget>[
-            Container(
-              height: 80,
-              color: Colors.grey[200],
-              child: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    InkWell(
-                      onTap: (){
-                        Navigator.push(context,MaterialPageRoute(
-                            builder: (BuildContext context) => ScanPage('driver2')));
-                      },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Image.asset(
-                            'assets/images/scan.png',
-                            height: 60.0,
-                            width: 60.0,
+    return Scaffold(
+      body: ListView(
+        children: <Widget>[
+          Container(
+            height: 80,
+            color: Colors.grey[200],
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  InkWell(
+                    onTap: (){
+                      Navigator.push(context,MaterialPageRoute(
+                          builder: (BuildContext context) => ScanPage('driver2')));
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Image.asset(
+                          'assets/images/scan.png',
+                          height: 60.0,
+                          width: 60.0,
+                        ),
+                        Text(
+                          'SCAN',
+                          style: TextStyle(
+                              color: CommonVar.app_theme_color,
+                              fontSize: 10.0
                           ),
-                          Text(
-                            'SCAN',
-                            style: TextStyle(
-                                color: CommonVar.app_theme_color,
-                                fontSize: 10.0
-                            ),
-                          )
-                        ],
-                      ),
+                        )
+                      ],
                     ),
-                    InkWell(
-                      onTap: (){
-                        Navigator.push(context, MaterialPageRoute(
-                            builder: (BuildContext context) => Camera('driver2')));
-                        // _settingModalBottomSheet(context);
-                      },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Image.asset(
-                            'assets/images/licence.png',
-                            height: 60.0,
-                            width: 60.0,
+                  ),
+                  InkWell(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (BuildContext context) => Camera('driver2')));
+                      // _settingModalBottomSheet(context);
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Image.asset(
+                          'assets/images/licence.png',
+                          height: 60.0,
+                          width: 60.0,
+                        ),
+                        Text(
+                          'LICENSE',
+                          style: TextStyle(
+                              color: CommonVar.app_theme_color,
+                              fontSize: 10.0
                           ),
-                          Text(
-                            'LICENSE',
-                            style: TextStyle(
-                                color: CommonVar.app_theme_color,
-                                fontSize: 10.0
-                            ),
-                          )
-                        ],
-                      ),
+                        )
+                      ],
                     ),
-                    InkWell(
-                      onTap: (){
-                        Navigator.push(context, MaterialPageRoute(
-                            builder: (BuildContext context) => CameraIns('driver2')));
-                      },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Image.asset(
-                            'assets/images/insurance.png',
-                            height: 60.0,
-                            width: 60.0,
+                  ),
+                  InkWell(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (BuildContext context) => CameraIns('driver2')));
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Image.asset(
+                          'assets/images/insurance.png',
+                          height: 60.0,
+                          width: 60.0,
+                        ),
+                        Text(
+                          'INSURANCE',
+                          style: TextStyle(
+                              color: CommonVar.app_theme_color,
+                              fontSize: 10.0
                           ),
-                          Text(
-                            'INSURANCE',
-                            style: TextStyle(
-                                color: CommonVar.app_theme_color,
-                                fontSize: 10.0
-                            ),
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    TextFormField(
+          ),
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  TextFormField(
+                    onChanged: (context){
+                      preferences.setString('fname2_pref', fnameController.text);
+                    },
+                    controller: fnameController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      hintText: 'First Name',
+                      hintStyle: TextStyle(fontSize: 16),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          width: 0,
+                          style: BorderStyle.none,
+                        ),
+                      ),
+                      filled: true,
+                      contentPadding: EdgeInsets.all(10),
+                      // fillColor: colorSearchBg,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top:10.0),
+                    child: TextFormField(
                       onChanged: (context){
-                        preferences.setString('fname2_pref', fnameController.text);
+                        preferences.setString('lname2_pref', lnameController.text);
                       },
-                      controller: fnameController,
+                      controller: lnameController,
                       keyboardType: TextInputType.text,
                       decoration: InputDecoration(
-                        hintText: 'First Name',
+                        hintText: 'Last Name',
                         hintStyle: TextStyle(fontSize: 16),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -242,118 +264,94 @@ class Driver2PageState extends State<Driver2Page> with
                         // fillColor: colorSearchBg,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top:10.0),
-                      child: TextFormField(
-                        onChanged: (context){
-                          preferences.setString('lname2_pref', lnameController.text);
-                        },
-                        controller: lnameController,
-                        keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          hintText: 'Last Name',
-                          hintStyle: TextStyle(fontSize: 16),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              width: 0,
-                              style: BorderStyle.none,
-                            ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top:10.0),
+                    child: TextFormField(
+                      onChanged: (context){
+                        preferences.setString('phone2_pref', phoneController.text);
+                      },
+                      controller: phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(
+                        hintText: 'Phone #',
+                        hintStyle: TextStyle(fontSize: 16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            width: 0,
+                            style: BorderStyle.none,
                           ),
-                          filled: true,
-                          contentPadding: EdgeInsets.all(10),
-                          // fillColor: colorSearchBg,
                         ),
+                        filled: true,
+                        contentPadding: EdgeInsets.all(10),
+                        // fillColor: colorSearchBg,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top:10.0),
-                      child: TextFormField(
-                        onChanged: (context){
-                          preferences.setString('phone2_pref', phoneController.text);
-                        },
-                        controller: phoneController,
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                          hintText: 'Phone #',
-                          hintStyle: TextStyle(fontSize: 16),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              width: 0,
-                              style: BorderStyle.none,
-                            ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top:10.0),
+                    child: TextFormField(
+                      onChanged: (context){
+                        preferences.setString('email2_pref', emailController.text);
+                      },
+                      controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        hintText: 'Email',
+                        hintStyle: TextStyle(fontSize: 16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            width: 0,
+                            style: BorderStyle.none,
                           ),
-                          filled: true,
-                          contentPadding: EdgeInsets.all(10),
-                          // fillColor: colorSearchBg,
                         ),
+                        filled: true,
+                        contentPadding: EdgeInsets.all(10),
+                        // fillColor: colorSearchBg,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top:10.0),
-                      child: TextFormField(
-                        onChanged: (context){
-                          preferences.setString('email2_pref', emailController.text);
-                        },
-                        controller: emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          hintText: 'Email',
-                          hintStyle: TextStyle(fontSize: 16),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              width: 0,
-                              style: BorderStyle.none,
+                  ),
+                  Divider(
+                    color: Colors.black,
+                  ),
+                  Column(
+                      children: [
+                        Row(children: <Widget>[
+                          Text(
+                            'Signed below',
+                            style: TextStyle(
+                                color: CommonVar.app_theme_color
                             ),
                           ),
-                          filled: true,
-                          contentPadding: EdgeInsets.all(10),
-                          // fillColor: colorSearchBg,
-                        ),
-                      ),
-                    ),
-                    Divider(
-                      color: Colors.black,
-                    ),
-                    Column(
-                        children: [
-                          Row(children: <Widget>[
-                            Text(
-                              'Signed below',
-                              style: TextStyle(
-                                  color: CommonVar.app_theme_color
-                              ),
-                            ),
-                            InkWell(onTap: _handleClearButtonPressed,
-                                child: Text('Clear'))
-                          ], mainAxisAlignment: MainAxisAlignment.spaceBetween),
-                          Padding(
-                              padding: EdgeInsets.only(top:5.0,left: 10,right: 10.0),
-                              child: Container(
-                                  height: 150.0,
-                                  child: SfSignaturePad(
-                                      key: signatureGlobalKey,
-                                      backgroundColor: Colors.white,
-                                      strokeColor: Colors.black,
-                                      minimumStrokeWidth: 1.0,
-                                      maximumStrokeWidth: 4.0,
-                                      onSignEnd: (){
-                                        _saveMySignature();
-                                      },
-                                  ),
-                                  decoration:
-                                  BoxDecoration(border: Border.all(color: Colors.white)))),
-                        ],
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center),
-                  ],
-                ),
+                          InkWell(onTap: _handleClearButtonPressed,
+                              child: Text('Clear'))
+                        ], mainAxisAlignment: MainAxisAlignment.spaceBetween),
+                        Padding(
+                            padding: EdgeInsets.only(top:5.0,left: 10,right: 10.0),
+                            child: Container(
+                                height: 150.0,
+                                child: SfSignaturePad(
+                                  key: signatureGlobalKey,
+                                  backgroundColor: Colors.white,
+                                  strokeColor: Colors.black,
+                                  minimumStrokeWidth: 1.0,
+                                  maximumStrokeWidth: 4.0,
+                                  onSignEnd: (){
+                                    _saveMySignature();
+                                  },
+                                ),
+                                decoration:
+                                BoxDecoration(border: Border.all(color: Colors.white)))),
+                      ],
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

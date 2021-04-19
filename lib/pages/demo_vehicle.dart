@@ -230,436 +230,434 @@ class DemoVehicleState extends State<DemoVehicle>{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return SafeArea(
-        child: Scaffold(
-          appBar: AppBar(
-            iconTheme: IconThemeData(
-              color: CommonVar.app_theme_color, //change your color here
-            ),
-            title: Text(
-              'Demo Vehicle',
-              style: TextStyle(
-                  color: CommonVar.app_theme_color
+    return Scaffold(
+      appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: CommonVar.app_theme_color, //change your color here
+        ),
+        title: Text(
+          'Demo Vehicle',
+          style: TextStyle(
+              color: CommonVar.app_theme_color
+          ),
+        ),
+        backgroundColor: Colors.white,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: ListView(
+          children: [
+            Container(
+              height: 40.0,
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.grey[200],
+                  ),
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.all(Radius.circular(15))
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton(
+                  hint: Padding(
+                    padding: const EdgeInsets.only(left: 5.0),
+                    child: Text('Please choose a Source'),
+                  ), // Not necessary for Option 1
+                  value: _selectedSource,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedSource = newValue;
+                    });
+                  },
+                  items: _locations.map((location) {
+                    return DropdownMenuItem(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left:8.0),
+                        child: new Text(location),
+                      ),
+                      value: location,
+                    );
+                  }).toList(),
+                ),
               ),
             ),
-            backgroundColor: Colors.white,
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: ListView(
-              children: [
-                Container(
-                  height: 40.0,
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey[200],
-                        ),
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.all(Radius.circular(15))
-                    ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton(
-                      hint: Padding(
-                        padding: const EdgeInsets.only(left: 5.0),
-                        child: Text('Please choose a Source'),
-                      ), // Not necessary for Option 1
-                      value: _selectedSource,
-                      onChanged: (newValue) {
-                        setState(() {
-                          _selectedSource = newValue;
-                        });
-                      },
-                      items: _locations.map((location) {
-                        return DropdownMenuItem(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left:8.0),
-                            child: new Text(location),
-                          ),
-                          value: location,
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
-                  child: InkWell(
-                    onTap: (){
-                      DateTime now = new DateTime.now();
-                      var _chosenDateTime = new DateTime(now.year, now.month, now.day, now.hour, now.minute);
-                      DatePicker.showDateTimePicker(context, showTitleActions: true, onChanged: (date) {
-                        print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
-                      }, onConfirm: (date) {
-                        print('confirm $date');
-                        setState(() {
-                          _chosenDateTime1 = date;
-                          String parseDate = new DateFormat("MMM dd, yyyy hh:mm a").format(_chosenDateTime1);
-                          startDateStr = parseDate;
-                          startDateStrForServer = new DateFormat("yyyy-MM-dd").format(_chosenDateTime1);
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: InkWell(
+                onTap: (){
+                  DateTime now = new DateTime.now();
+                  var _chosenDateTime = new DateTime(now.year, now.month, now.day, now.hour, now.minute);
+                  DatePicker.showDateTimePicker(context, showTitleActions: true, onChanged: (date) {
+                    print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
+                  }, onConfirm: (date) {
+                    print('confirm $date');
+                    setState(() {
+                      _chosenDateTime1 = date;
+                      String parseDate = new DateFormat("MMM dd, yyyy hh:mm a").format(_chosenDateTime1);
+                      startDateStr = parseDate;
+                      startDateStrForServer = new DateFormat("yyyy-MM-dd").format(_chosenDateTime1);
 
-                          startSelectedDateTime = new DateFormat("MMM dd, yyyy hh:mm a").parse(startDateStr);
-                          _chosenDateTime = new DateTime(startSelectedDateTime.year, startSelectedDateTime.month, startSelectedDateTime.day, startSelectedDateTime.hour, startSelectedDateTime.minute+15);
-                          String parseDateEndDate = new DateFormat("MMM dd, yyyy hh:mm a").format(_chosenDateTime);
-                          endDateStrForServer = new DateFormat("yyyy-MM-dd").format(_chosenDateTime);
-                          endDateStr = parseDateEndDate;
-                        });
-                      }, currentTime: _chosenDateTime);
-                    },
-                    child: Container(
-                      height: 40.0,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey[200],
-                          ),
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.all(Radius.circular(15))
+                      startSelectedDateTime = new DateFormat("MMM dd, yyyy hh:mm a").parse(startDateStr);
+                      _chosenDateTime = new DateTime(startSelectedDateTime.year, startSelectedDateTime.month, startSelectedDateTime.day, startSelectedDateTime.hour, startSelectedDateTime.minute+15);
+                      String parseDateEndDate = new DateFormat("MMM dd, yyyy hh:mm a").format(_chosenDateTime);
+                      endDateStrForServer = new DateFormat("yyyy-MM-dd").format(_chosenDateTime);
+                      endDateStr = parseDateEndDate;
+                    });
+                  }, currentTime: _chosenDateTime);
+                },
+                child: Container(
+                  height: 40.0,
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey[200],
                       ),
-                      child: startDateStr == ''?Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Start Date'
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 5.0),
-                            child: Icon(Icons.add_circle),
-                          )
-                        ],
-                      ):Center(
-                          child: Text(
-                              startDateStr,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800
-                            ),
-                          )),
-                    ),
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.all(Radius.circular(15))
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
-                  child: InkWell(
-                    onTap: (){
-                      // isStartDate = false;
-                      // isEndDate = true;
-                      // _showDatePicker(context);
-                      DateTime now = new DateTime.now();
-                      DateTime _chosenDateTime = new DateTime(now.year, now.month, now.day, now.hour, now.minute);
-                      DatePicker.showDateTimePicker(context, showTitleActions: true, onChanged: (date) {
-                        print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
-                      }, onConfirm: (date) {
-                        print('confirm $date');
-                        _chosenDateTime2 = date;
-                        int diff = _chosenDateTime2.difference(_chosenDateTime1).inMinutes;
-                        if(diff>15){
-                          setState(() {
-                            _chosenDateTime2 = date;
-                            String parseDate = new DateFormat("MMM dd, yyyy hh:mm a").format(_chosenDateTime2);
-                            endDateStr = parseDate;
-                            endDateStrForServer = new DateFormat("yyyy-MM-dd").format(_chosenDateTime2);
-                          });
-                        }
-                        else{
-                          CommonMethods.showAlertDialogWithSingleButton(context, 'End date should b greater then 15 minutes from start date');
-                        }
-                      }, currentTime: _chosenDateTime);
-                    },
-                    child: Container(
-                      height: 40.0,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey[200],
-                          ),
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.all(Radius.circular(15))
-                      ),
-                      child: endDateStr == ''?Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                              'End Date'
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 5.0),
-                            child: Icon(Icons.add_circle),
-                          )
-                        ],
-                      ):
-                      Center(
-                          child: Text(
-                            endDateStr,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w800
-                            ),
-                          )),
-                    ),
-                  ),
-                ),
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: startDateStr == ''?Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: TextFormField(
-                          controller: stockController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            hintText: 'Stock #',
-                            hintStyle: TextStyle(fontSize: 16),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                width: 0,
-                                style: BorderStyle.none,
-                              ),
-                            ),
-                            filled: true,
-                            contentPadding: EdgeInsets.all(10),
-                            // fillColor: colorSearchBg,
-                          ),
-                        ),
+                      Text(
+                          'Start Date'
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: Container(
-                          height: 40.0,
-                          width: 400.0 ,
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.grey[200],
-                              ),
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.all(Radius.circular(15))
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton(
-                              hint: Padding(
-                                padding: const EdgeInsets.only(left: 5.0),
-                                child: Text('Please choose year'),
-                              ), // Not necessary for Option 1
-                              value: _selectedYearStr,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  _selectedYearStr = newValue;
-                                  getMakeData(_selectedYearStr);
-                                });
-                              },
-                              items: _yearSelesct.map((yearSelect) {
-                                return DropdownMenuItem(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left:8.0),
-                                    child: new Text(yearSelect),
-                                  ),
-                                  value: yearSelect,
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        )
-                        ,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top:10.0),
-                        child: Container(
-                          height: 40.0,
-                          width: 400.0,
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.grey[200],
-                              ),
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.all(Radius.circular(15))
-                          ),
-                          child: resultList==null?Padding(
-                            padding: const EdgeInsets.only(top: 10.0,left: 5.0),
-                            child: Text(
-                              'Select Make',
-                              style: TextStyle(
-                                  color: Colors.grey
-                              ),
-                            ),
-                          ):DropdownButtonHideUnderline(
-                            child: DropdownButton<ResultMake>(
-                              hint: Padding(
-                                padding: const EdgeInsets.only(left: 5.0),
-                                child: Text('Please choose Make'),
-                              ),
-                              value: selectedMake,
-                              isDense: true,
-                              onChanged: (ResultMake newValue) {
-                                setState(() {
-                                  selectedMake = newValue;
-                                  selectMakeStr = newValue.makeName;
-                                  getModelsData(newValue.makeName, _selectedYearStr);
-                                });
-                                print(selectedMake);
-                              },
-                              items: resultList.map((ResultMake map) {
-                                return new DropdownMenuItem<ResultMake>(
-                                  value: map,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 5.0),
-                                    child: new Text(map.makeName,
-                                        style: new TextStyle(color: Colors.black)),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top:10.0),
-                        child: Container(
-                          height: 40.0,
-                          width: 400.0,
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.grey[200],
-                              ),
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.all(Radius.circular(15))
-                          ),
-                          child: resultModelList==null?Padding(
-                            padding: const EdgeInsets.only(top: 10.0,left: 5.0),
-                            child: Text(
-                              'Select Model',
-                              style: TextStyle(
-                                  color: Colors.grey
-                              ),
-                            ),
-                          ):DropdownButtonHideUnderline(
-                            child: new DropdownButton<ResultModel>(
-                              hint: Padding(
-                                padding: const EdgeInsets.only(left: 5.0),
-                                child: Text('Please choose Model'),
-                              ),
-                              value: selectedModel,
-                              isDense: true,
-                              onChanged: (ResultModel newValue) {
-                                setState(() {
-                                  selectedModel = newValue;
-                                  selectModelStr = newValue.modelName;
-                                });
-                                print(selectedMake);
-                              },
-                              items: resultModelList.map((ResultModel map) {
-                                return new DropdownMenuItem<ResultModel>(
-                                  value: map,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 5.0),
-                                    child: new Text(map.modelName,
-                                        style: new TextStyle(color: Colors.black)),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: Text(
-                            'Driver1 name',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w800
-                          ),
-                        ),
-                      ),
-                      FutureBuilder(
-                        future: getPreferenceData(),
-                        builder: (context, snapshot){
-                          if(snapshot.data[1] == null){
-                            return Text('no name');
-                          }
-                          else{
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 5.0),
-                              child: Container(
-                                  height: 40.0,
-                                  width: 400.0,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Colors.grey[200],
-                                      ),
-                                      color: Colors.grey[200],
-                                      borderRadius: BorderRadius.all(Radius.circular(15))
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 5.0,top: 10.0),
-                                    child: Text(
-                                      snapshot.data[1],
-                                    ),
-                                  )
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: Text(
-                            'Driver2 name',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w800
-                          ),
-                        ),
-                      ),
-                      FutureBuilder(
-                        future: getPreferenceData(),
-                        builder: (context, snapshot){
-                          if(snapshot.data[2] == null){
-                            return Text('no name');
-                          }
-                          else{
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 5.0),
-                              child: Container(
-                                  height: 40.0,
-                                  width: 400.0,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Colors.grey[200],
-                                      ),
-                                      color: Colors.grey[200],
-                                      borderRadius: BorderRadius.all(Radius.circular(15))
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 5.0,top: 10.0),
-                                    child: Text(
-                                      snapshot.data[2],
-                                    ),
-                                  )
-                              ),
-                            );
-                          }
-                        },
-                      ),
+                        padding: const EdgeInsets.only(left: 5.0),
+                        child: Icon(Icons.add_circle),
+                      )
                     ],
-                  ),
+                  ):Center(
+                      child: Text(
+                        startDateStr,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w800
+                        ),
+                      )),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 15.0),
-                  child: InkWell(
-                    onTap: (){
-                      submitDriverData();
-                    },
-                    child: Container(
-                      height: 45.0,
-                      decoration: new BoxDecoration(
-                        color: CommonVar.app_theme_color,
-                        //border: new Border.all(color: Colors.white, width: 2.0),
-                        borderRadius: new BorderRadius.circular(10.0),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: InkWell(
+                onTap: (){
+                  // isStartDate = false;
+                  // isEndDate = true;
+                  // _showDatePicker(context);
+                  DateTime now = new DateTime.now();
+                  DateTime _chosenDateTime = new DateTime(now.year, now.month, now.day, now.hour, now.minute);
+                  DatePicker.showDateTimePicker(context, showTitleActions: true, onChanged: (date) {
+                    print('change $date in time zone ' + date.timeZoneOffset.inHours.toString());
+                  }, onConfirm: (date) {
+                    print('confirm $date');
+                    _chosenDateTime2 = date;
+                    int diff = _chosenDateTime2.difference(_chosenDateTime1).inMinutes;
+                    if(diff>15){
+                      setState(() {
+                        _chosenDateTime2 = date;
+                        String parseDate = new DateFormat("MMM dd, yyyy hh:mm a").format(_chosenDateTime2);
+                        endDateStr = parseDate;
+                        endDateStrForServer = new DateFormat("yyyy-MM-dd").format(_chosenDateTime2);
+                      });
+                    }
+                    else{
+                      CommonMethods.showAlertDialogWithSingleButton(context, 'End date should b greater then 15 minutes from start date');
+                    }
+                  }, currentTime: _chosenDateTime);
+                },
+                child: Container(
+                  height: 40.0,
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey[200],
                       ),
-                      child: Center(child: new Text('Submit', style: new TextStyle(fontSize: 18.0, color: Colors.white),),),
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.all(Radius.circular(15))
+                  ),
+                  child: endDateStr == ''?Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                          'End Date'
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 5.0),
+                        child: Icon(Icons.add_circle),
+                      )
+                    ],
+                  ):
+                  Center(
+                      child: Text(
+                        endDateStr,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w800
+                        ),
+                      )),
+                ),
+              ),
+            ),
+            Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: TextFormField(
+                      controller: stockController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: 'Stock #',
+                        hintStyle: TextStyle(fontSize: 16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            width: 0,
+                            style: BorderStyle.none,
+                          ),
+                        ),
+                        filled: true,
+                        contentPadding: EdgeInsets.all(10),
+                        // fillColor: colorSearchBg,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Container(
+                      height: 40.0,
+                      width: 400.0 ,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey[200],
+                          ),
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.all(Radius.circular(15))
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton(
+                          hint: Padding(
+                            padding: const EdgeInsets.only(left: 5.0),
+                            child: Text('Please choose year'),
+                          ), // Not necessary for Option 1
+                          value: _selectedYearStr,
+                          onChanged: (newValue) {
+                            setState(() {
+                              _selectedYearStr = newValue;
+                              getMakeData(_selectedYearStr);
+                            });
+                          },
+                          items: _yearSelesct.map((yearSelect) {
+                            return DropdownMenuItem(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left:8.0),
+                                child: new Text(yearSelect),
+                              ),
+                              value: yearSelect,
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    )
+                    ,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top:10.0),
+                    child: Container(
+                      height: 40.0,
+                      width: 400.0,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey[200],
+                          ),
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.all(Radius.circular(15))
+                      ),
+                      child: resultList==null?Padding(
+                        padding: const EdgeInsets.only(top: 10.0,left: 5.0),
+                        child: Text(
+                          'Select Make',
+                          style: TextStyle(
+                              color: Colors.grey
+                          ),
+                        ),
+                      ):DropdownButtonHideUnderline(
+                        child: DropdownButton<ResultMake>(
+                          hint: Padding(
+                            padding: const EdgeInsets.only(left: 5.0),
+                            child: Text('Please choose Make'),
+                          ),
+                          value: selectedMake,
+                          isDense: true,
+                          onChanged: (ResultMake newValue) {
+                            setState(() {
+                              selectedMake = newValue;
+                              selectMakeStr = newValue.makeName;
+                              getModelsData(newValue.makeName, _selectedYearStr);
+                            });
+                            print(selectedMake);
+                          },
+                          items: resultList.map((ResultMake map) {
+                            return new DropdownMenuItem<ResultMake>(
+                              value: map,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 5.0),
+                                child: new Text(map.makeName,
+                                    style: new TextStyle(color: Colors.black)),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top:10.0),
+                    child: Container(
+                      height: 40.0,
+                      width: 400.0,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey[200],
+                          ),
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.all(Radius.circular(15))
+                      ),
+                      child: resultModelList==null?Padding(
+                        padding: const EdgeInsets.only(top: 10.0,left: 5.0),
+                        child: Text(
+                          'Select Model',
+                          style: TextStyle(
+                              color: Colors.grey
+                          ),
+                        ),
+                      ):DropdownButtonHideUnderline(
+                        child: new DropdownButton<ResultModel>(
+                          hint: Padding(
+                            padding: const EdgeInsets.only(left: 5.0),
+                            child: Text('Please choose Model'),
+                          ),
+                          value: selectedModel,
+                          isDense: true,
+                          onChanged: (ResultModel newValue) {
+                            setState(() {
+                              selectedModel = newValue;
+                              selectModelStr = newValue.modelName;
+                            });
+                            print(selectedMake);
+                          },
+                          items: resultModelList.map((ResultModel map) {
+                            return new DropdownMenuItem<ResultModel>(
+                              value: map,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 5.0),
+                                child: new Text(map.modelName,
+                                    style: new TextStyle(color: Colors.black)),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      'Driver1 name',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w800
+                      ),
+                    ),
+                  ),
+                  FutureBuilder(
+                    future: getPreferenceData(),
+                    builder: (context, snapshot){
+                      if(snapshot.data[1] == null){
+                        return Text('no name');
+                      }
+                      else{
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 5.0),
+                          child: Container(
+                              height: 40.0,
+                              width: 400.0,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.grey[200],
+                                  ),
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.all(Radius.circular(15))
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 5.0,top: 10.0),
+                                child: Text(
+                                  snapshot.data[1],
+                                ),
+                              )
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      'Driver2 name',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w800
+                      ),
+                    ),
+                  ),
+                  FutureBuilder(
+                    future: getPreferenceData(),
+                    builder: (context, snapshot){
+                      if(snapshot.data[2] == null){
+                        return Text('no name');
+                      }
+                      else{
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 5.0),
+                          child: Container(
+                              height: 40.0,
+                              width: 400.0,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.grey[200],
+                                  ),
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.all(Radius.circular(15))
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 5.0,top: 10.0),
+                                child: Text(
+                                  snapshot.data[2],
+                                ),
+                              )
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-        )
+            Padding(
+              padding: const EdgeInsets.only(top: 15.0),
+              child: InkWell(
+                onTap: (){
+                  submitDriverData();
+                },
+                child: Container(
+                  height: 45.0,
+                  decoration: new BoxDecoration(
+                    color: CommonVar.app_theme_color,
+                    //border: new Border.all(color: Colors.white, width: 2.0),
+                    borderRadius: new BorderRadius.circular(10.0),
+                  ),
+                  child: Center(child: new Text('Submit', style: new TextStyle(fontSize: 18.0, color: Colors.white),),),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
   DateTime _chosenDateTime1;

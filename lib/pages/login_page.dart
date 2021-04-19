@@ -137,128 +137,126 @@ class LoginPageState extends State<LoginPage>{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return SafeArea(
-      child: Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'DEMOLIGHT',
-                style: TextStyle(
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'DEMOLIGHT',
+              style: TextStyle(
                   fontSize: 35.0,
                   color: CommonVar.app_theme_color
-                ),
               ),
-              Text(
-                'The best way to test drive.',
-                style: TextStyle(
-                    fontSize: 17.0,
-                    color: CommonVar.app_theme_color
-                ),
+            ),
+            Text(
+              'The best way to test drive.',
+              style: TextStyle(
+                  fontSize: 17.0,
+                  color: CommonVar.app_theme_color
               ),
-              Form(
-                key: _formKey,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 5.0,top: 50.0),
-                        child: Text('User Email'),
-                      ),
-                      TextFormField(
-                        validator: (input) {
-                          if(input.isEmpty){
-                            return 'Provide an email';
-                          }
-                        },
-                        controller: emailCntrl,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          hintText: 'Email',
-                          hintStyle: TextStyle(fontSize: 16),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              width: 0,
-                              style: BorderStyle.none,
-                            ),
+            ),
+            Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5.0,top: 50.0),
+                      child: Text('User Email'),
+                    ),
+                    TextFormField(
+                      validator: (input) {
+                        if(input.isEmpty){
+                          return 'Provide an email';
+                        }
+                      },
+                      controller: emailCntrl,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        hintText: 'Email',
+                        hintStyle: TextStyle(fontSize: 16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            width: 0,
+                            style: BorderStyle.none,
                           ),
-                          filled: true,
-                          contentPadding: EdgeInsets.all(10),
-                          // fillColor: colorSearchBg,
+                        ),
+                        filled: true,
+                        contentPadding: EdgeInsets.all(10),
+                        // fillColor: colorSearchBg,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5.0,top: 10.0),
+                      child: Text('Password'),
+                    ),
+                    TextFormField(
+                      validator: (input) {
+                        if(input.isEmpty){
+                          return 'Provide an password';
+                        }
+                      },
+                      controller: passCntrl,
+                      keyboardType: TextInputType.text,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        hintText: 'Password',
+                        hintStyle: TextStyle(fontSize: 16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            width: 0,
+                            style: BorderStyle.none,
+                          ),
+                        ),
+                        filled: true,
+                        contentPadding: EdgeInsets.all(10),
+                        // fillColor: colorSearchBg,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15.0),
+                      child: InkWell(
+                        onTap: (){
+                          loginUser(emailCntrl.text,passCntrl.text);
+                        },
+                        child: Container(
+                          height: 45.0,
+                          decoration: new BoxDecoration(
+                            color: CommonVar.app_theme_color,
+                            //border: new Border.all(color: Colors.white, width: 2.0),
+                            borderRadius: new BorderRadius.circular(10.0),
+                          ),
+                          child: Center(child: new Text('Login', style: new TextStyle(fontSize: 18.0, color: Colors.white),),),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 5.0,top: 10.0),
-                        child: Text('Password'),
-                      ),
-                      TextFormField(
-                        validator: (input) {
-                          if(input.isEmpty){
-                            return 'Provide an password';
-                          }
-                        },
-                        controller: passCntrl,
-                        keyboardType: TextInputType.text,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          hintText: 'Password',
-                          hintStyle: TextStyle(fontSize: 16),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              width: 0,
-                              style: BorderStyle.none,
-                            ),
-                          ),
-                          filled: true,
-                          contentPadding: EdgeInsets.all(10),
-                          // fillColor: colorSearchBg,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 15.0),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: Center(
                         child: InkWell(
                           onTap: (){
-                            loginUser(emailCntrl.text,passCntrl.text);
+                            _showForgetPassDialog();
                           },
-                          child: Container(
-                            height: 45.0,
-                            decoration: new BoxDecoration(
-                              color: CommonVar.app_theme_color,
-                              //border: new Border.all(color: Colors.white, width: 2.0),
-                              borderRadius: new BorderRadius.circular(10.0),
-                            ),
-                            child: Center(child: new Text('Login', style: new TextStyle(fontSize: 18.0, color: Colors.white),),),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20.0),
-                        child: Center(
-                          child: InkWell(
-                            onTap: (){
-                              _showForgetPassDialog();
-                            },
-                            child: Text(
-                                'Forget Password',
-                              style: TextStyle(
+                          child: Text(
+                            'Forget Password',
+                            style: TextStyle(
                                 fontSize: 17.0,
                                 color: CommonVar.app_theme_color
-                              ),
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
