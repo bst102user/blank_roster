@@ -1,100 +1,97 @@
 import 'dart:async';
-import 'package:camera/camera.dart';
-import 'package:demolight/app_utils/common_var.dart';
-import 'package:demolight/pages/dahsboard.dart';
-import 'package:demolight/pages/demo_vehicle.dart';
-import 'package:demolight/pages/login_page.dart';
-import 'package:demolight/pages/test.dart';
-// import 'package:firebase_core/firebase_core.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-List<CameraDescription> cameras;
-void main() {
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations(
-    [
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ],
-  ).then((val)async {
-    cameras = await availableCameras();
-    runApp(new MyApp());
-  });
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    systemNavigationBarColor: CommonVar.app_theme_color,
-    statusBarColor: CommonVar.app_theme_color,
-  ));
-}
+void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyHomePage(),
-      // home: CameraHomeScreen(cameras),
-    );
-  }
+  _MyAppState createState() => _MyAppState();
 }
 
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class _MyAppState extends State<MyApp> {
+  String _scanBarcode = 'Unknown';
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    goToNextPage();
   }
 
-  void goToNextPage()async{
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    bool isLogin = preferences.getBool(CommonVar.IS_LOGIN_KEY);
-    if(isLogin == null){
-      isLogin = false;
+  Future<void> startBarcodeScanStream() async {
+    FlutterBarcodeScanner.getBarcodeStreamReceiver(
+        '#ff6666', 'Cancel', true, ScanMode.BARCODE)
+        .listen((barcode) => print(barcode));
+  }
+
+  Future<void> scanQR() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.QR);
+      print(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
     }
-    if(isLogin){
-      Timer(
-          Duration(seconds: 3),
-              () => Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (BuildContext context) => Dashboard())));
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      _scanBarcode = barcodeScanRes;
+    });
+  }
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> scanBarcodeNormal() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.BARCODE);
+      print(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
     }
-    else{
-      Timer(
-          Duration(seconds: 3),
-              () => Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (BuildContext context) => LoginPage())));
-    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      _scanBarcode = barcodeScanRes;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Demolight',
-              style: TextStyle(
-                color: CommonVar.app_theme_color,
-                fontSize: 50.0,
-                fontWeight: FontWeight.w700
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    return MaterialApp(
+        home: Scaffold(
+            appBar: AppBar(title: const Text('Barcode scan')),
+            body: Builder(builder: (BuildContext context) {
+              return Container(
+                  alignment: Alignment.center,
+                  child: Flex(
+                      direction: Axis.vertical,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        ElevatedButton(
+                            onPressed: () => scanBarcodeNormal(),
+                            child: Text('Start barcode scan')),
+                        ElevatedButton(
+                            onPressed: () => scanQR(),
+                            child: Text('Start QR scan')),
+                        ElevatedButton(
+                            onPressed: () => startBarcodeScanStream(),
+                            child: Text('Start barcode scan stream')),
+                        Text('Scan result : $_scanBarcode\n',
+                            style: TextStyle(fontSize: 20))
+                      ]));
+            })));
   }
 }

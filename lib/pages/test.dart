@@ -1,87 +1,60 @@
-// import 'package:flutter/material.dart';
-//
-// void main() {
-//   runApp(MaterialApp(
-//     title: 'Returning Data',
-//     home: HomeScreen(),
-//   ));
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:fast_qr_reader_view/fast_qr_reader_view.dart';
+
+List<CameraDescription> cameras;
+
+// Future<Null> main() async {
+//   cameras = await availableCameras();
+//   runApp(new CameraApp());
 // }
-//
-// class HomeScreen extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Returning Data Demo'),
-//       ),
-//       body: Center(child: SelectionButton()),
-//     );
-//   }
-// }
-//
-// class SelectionButton extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return ElevatedButton(
-//       onPressed: () {
-//         _navigateAndDisplaySelection(context);
-//       },
-//       child: Text('Pick an option, any option!'),
-//     );
-//   }
-//
-//   // A method that launches the SelectionScreen and awaits the result from
-//   // Navigator.pop.
-//   _navigateAndDisplaySelection(BuildContext context) async {
-//     // Navigator.push returns a Future that completes after calling
-//     // Navigator.pop on the Selection Screen.
-//     final result = await Navigator.push(
-//       context,
-//       MaterialPageRoute(builder: (context) => SelectionScreen()),
-//     );
-//
-//     // After the Selection Screen returns a result, hide any previous snackbars
-//     // and show the new result.
-//     ScaffoldMessenger.of(context)
-//       ..removeCurrentSnackBar()
-//       ..showSnackBar(SnackBar(content: Text("$result")));
-//   }
-// }
-//
-// class SelectionScreen extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Pick an option'),
-//       ),
-//       body: Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             Padding(
-//               padding: const EdgeInsets.all(8.0),
-//               child: ElevatedButton(
-//                 onPressed: () {
-//                   // Close the screen and return "Yep!" as the result.
-//                   Navigator.pop(context, 'Yep!');
-//                 },
-//                 child: Text('Yep!'),
-//               ),
-//             ),
-//             Padding(
-//               padding: const EdgeInsets.all(8.0),
-//               child: ElevatedButton(
-//                 onPressed: () {
-//                   // Close the screen and return "Nope!" as the result.
-//                   Navigator.pop(context, 'Nope.');
-//                 },
-//                 child: Text('Nope.'),
-//               ),
-//             )
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
+
+class CameraApp extends StatefulWidget {
+  @override
+  _CameraAppState createState() => new _CameraAppState();
+}
+
+class _CameraAppState extends State<CameraApp> {
+  QRReaderController controller;
+
+
+  getCameras()async{
+    cameras = await availableCameras();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getCameras();
+    controller = new QRReaderController(cameras[0], ResolutionPreset.medium, [CodeFormat.qr], (dynamic value){
+      print(value); // the result!
+      // ... do something
+      // wait 3 seconds then start scanning again.
+      new Future.delayed(const Duration(seconds: 3), controller.startScanning);
+    });
+    controller.initialize().then((_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {});
+      controller.startScanning();
+    });
+  }
+
+  @override
+  void dispose() {
+    controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!controller.value.isInitialized) {
+      return new Container();
+    }
+    return new AspectRatio(
+        aspectRatio:
+        controller.value.aspectRatio,
+        child: new QRReaderPreview(controller));
+  }
+}
