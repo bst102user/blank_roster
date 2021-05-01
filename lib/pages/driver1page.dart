@@ -14,6 +14,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 import 'CameraIns.dart';
 
@@ -33,6 +34,7 @@ class Driver1PageState extends State<Driver1Page> with
   bool isInsuImg;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   SharedPreferences preferences;
+  String _scanBarcode = 'Unknown';
 
   @override
   bool get wantKeepAlive => true;
@@ -131,20 +133,41 @@ class Driver1PageState extends State<Driver1Page> with
     }
   }
 
-  _navigateAndDisplaySelection(BuildContext context) async {
-    // Navigator.push returns a Future that completes after calling
-    // Navigator.pop on the Selection Screen.
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ScanPage('driver1')),
-    );
+  Future<void> scanBarcodeNormal() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.BARCODE);
+      print(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
 
-    print(result);
-    fnameController.text = result[0];
-    lnameController.text = result[1];
-    preferences.setString('fname1_pref', result[0]);
-    preferences.setString('lname1_pref', result[1]);
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      _scanBarcode = barcodeScanRes;
+      String lSData = _scanBarcode;
+      String start = "DAA";
+      String end = "DAG";
+      int startIndex = lSData.indexOf(start);
+      int endIndex = lSData.indexOf(end, startIndex + start.length);
+      print(lSData.substring(startIndex + start.length, endIndex));
+      String fullname = lSData.substring(startIndex + start.length, endIndex);
+      int idx = fullname.indexOf(",");
+      List parts = [fullname.substring(0,idx).trim(), fullname.substring(idx+1).trim()];
+      print(parts);
+      fnameController.text = parts[0];
+      lnameController.text = parts[1];
+      preferences.setString('fname1_pref', parts[0]);
+      preferences.setString('lname1_pref', parts[1]);
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -163,7 +186,8 @@ class Driver1PageState extends State<Driver1Page> with
                     onTap: (){
                       // Navigator.push(context, MaterialPageRoute(
                       //     builder: (BuildContext context) => ScanPage('driver1')));
-                      _navigateAndDisplaySelection(context);
+                      // _navigateAndDisplaySelection(context);
+                      scanBarcodeNormal();
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
