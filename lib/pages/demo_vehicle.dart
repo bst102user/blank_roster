@@ -161,11 +161,11 @@ class DemoVehicleState extends State<DemoVehicle>{
                           // _chosenDateTime = new DateTime(now.year, now.month, now.day, now.hour, now.minute);
                           String parseDate = new DateFormat("MMM dd, yyyy hh:mm a").format(_chosenDateTime);
                           startDateStr = parseDate;
-                          startDateStrForServer = new DateFormat("yyyy-MM-dd").format(_chosenDateTime);
+                          startDateStrForServer = new DateFormat("yyyy-MM-dd hh:mm:ss").format(_chosenDateTime);
                           startSelectedDateTime = new DateFormat("MMM dd, yyyy hh:mm a").parse(startDateStr);
                           _chosenDateTime = new DateTime(startSelectedDateTime.year, startSelectedDateTime.month, startSelectedDateTime.day, startSelectedDateTime.hour, startSelectedDateTime.minute+15);
                           String parseDateEndDate = new DateFormat("MMM dd, yyyy hh:mm a").format(_chosenDateTime);
-                          endDateStrForServer = new DateFormat("yyyy-MM-dd").format(_chosenDateTime);
+                          endDateStrForServer = new DateFormat("yyyy-MM-dd hh:mm:ss").format(_chosenDateTime);
                           endDateStr = parseDateEndDate;
                         }
                         else if(isEndDate){
@@ -294,12 +294,12 @@ class DemoVehicleState extends State<DemoVehicle>{
                       _chosenDateTime1 = date;
                       String parseDate = new DateFormat("MMM dd, yyyy hh:mm a").format(_chosenDateTime1);
                       startDateStr = parseDate;
-                      startDateStrForServer = new DateFormat("yyyy-MM-dd").format(_chosenDateTime1);
+                      startDateStrForServer = new DateFormat("yyyy-MM-dd hh:mm:ss").format(_chosenDateTime1);
 
                       startSelectedDateTime = new DateFormat("MMM dd, yyyy hh:mm a").parse(startDateStr);
                       _chosenDateTime = new DateTime(startSelectedDateTime.year, startSelectedDateTime.month, startSelectedDateTime.day, startSelectedDateTime.hour, startSelectedDateTime.minute+15);
                       String parseDateEndDate = new DateFormat("MMM dd, yyyy hh:mm a").format(_chosenDateTime);
-                      endDateStrForServer = new DateFormat("yyyy-MM-dd").format(_chosenDateTime);
+                      endDateStrForServer = new DateFormat("yyyy-MM-dd hh:mm:ss").format(_chosenDateTime);
                       endDateStr = parseDateEndDate;
                     });
                   }, currentTime: _chosenDateTime);

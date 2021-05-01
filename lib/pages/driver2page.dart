@@ -127,6 +127,21 @@ class Driver2PageState extends State<Driver2Page> with
     return mData;
   }
 
+  _navigateAndDisplaySelection(BuildContext context) async {
+    // Navigator.push returns a Future that completes after calling
+    // Navigator.pop on the Selection Screen.
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ScanPage('driver2')),
+    );
+
+    print(result);
+    fnameController.text = result[0];
+    lnameController.text = result[1];
+    preferences.setString('fname2_pref', result[0]);
+    preferences.setString('lname2_pref', result[1]);
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -142,8 +157,9 @@ class Driver2PageState extends State<Driver2Page> with
                 children: <Widget>[
                   InkWell(
                     onTap: (){
-                      Navigator.push(context,MaterialPageRoute(
-                          builder: (BuildContext context) => ScanPage('driver2')));
+                      // Navigator.push(context,MaterialPageRoute(
+                      //     builder: (BuildContext context) => ScanPage('driver2')));
+                      _navigateAndDisplaySelection(context);
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,

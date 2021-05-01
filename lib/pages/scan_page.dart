@@ -19,14 +19,41 @@ class ScanPageState extends State<ScanPage>{
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   String messageText = 'Back of licence';
 
-  @override
-  void reassemble() {
-    super.reassemble();
-    if (Platform.isAndroid) {
-      controller.pauseCamera();
-    }
-    controller.resumeCamera();
-  }
+  // @override
+  // void reassemble() {
+  //   super.reassemble();
+  //   if (Platform.isAndroid) {
+  //     controller.pauseCamera();
+  //   }
+  //   controller.resumeCamera();
+  // }
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   String lSData = '@'
+  //       ''
+  //       'ANSI 6360050101DL00300203DLDAQ3265188'
+  //       'DAALOTT,ERIC,B,'
+  //       'DAG763 TEST STREET'
+  //       'DAINEW YORK CITY'
+  //       'DAJSC'
+  //       'DAK10005'
+  //       'DARD';
+  //   // const str = "the quick brown fox jumps over the lazy dog";
+  //   String start = "DAA";
+  //   String end = "DAG";
+  //
+  //   int startIndex = lSData.indexOf(start);
+  //   int endIndex = lSData.indexOf(end, startIndex + start.length);
+  //
+  //   print(lSData.substring(startIndex + start.length, endIndex));
+  //   String fullname = lSData.substring(startIndex + start.length, endIndex);
+  //   int idx = fullname.indexOf(",");
+  //   List parts = [fullname.substring(0,idx).trim(), fullname.substring(idx+1).trim()];
+  //   print(parts);
+  //   Navigator.pop(context, parts);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -139,6 +166,8 @@ class ScanPageState extends State<ScanPage>{
     );
   }
 
+  bool isgoaway = true;
+
   void _onQRViewCreated(QRViewController controller) {
     setState(() {
       this.controller = controller;
@@ -146,8 +175,22 @@ class ScanPageState extends State<ScanPage>{
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         result = scanData;
+        String lSData = scanData.code;
+        String start = "DAA";
+        String end = "DAG";
+        int startIndex = lSData.indexOf(start);
+        int endIndex = lSData.indexOf(end, startIndex + start.length);
+        print(lSData.substring(startIndex + start.length, endIndex));
+        String fullname = lSData.substring(startIndex + start.length, endIndex);
+        int idx = fullname.indexOf(",");
+        List parts = [fullname.substring(0,idx).trim(), fullname.substring(idx+1).trim()];
+        print(parts);
         messageText = 'licence info not valid';
         print('result: '+result.toString());
+        if(isgoaway){
+          Navigator.pop(context, parts);
+          isgoaway = false;
+        }
         // Navigator.pop(context, scanData);
       });
     });

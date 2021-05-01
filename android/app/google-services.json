@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "302128732555",
+    "project_id": "demolight-c397c",
+    "storage_bucket": "demolight-c397c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:302128732555:android:50cdcf7a14246a2a33378e",
+        "android_client_info": {
+          "package_name": "io.app.appdemolight"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "302128732555-734m24kboa7d0jnh1nbeqaqc90osjn8r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpKez424HyLMrmRfqcP2cGaMX7sBB8-iI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "302128732555-734m24kboa7d0jnh1nbeqaqc90osjn8r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
